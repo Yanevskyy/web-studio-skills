@@ -194,6 +194,33 @@ Footer на мобильных устройствах:
 - [ ] Чекбокс согласия с Privacy Policy
 - [ ] Ссылка на Privacy Policy рядом с чекбоксом
 
+### Studio Credit (Clarity Web)
+- [ ] В нижней части footer добавлена надпись "Made by Clarity Web"
+- [ ] Ссылка ведёт на https://clarityweb.ie
+- [ ] Стиль: неброский, меньший размер шрифта, приглушённый цвет
+
+**Пример кода:**
+```jsx
+{/* Bottom Bar */}
+<div className="flex flex-col md:flex-row justify-between items-center gap-4">
+  <p className="text-xs text-soft-grey">
+    © {currentYear} ClientName. All rights reserved.
+  </p>
+  <div className="flex items-center gap-6">
+    {/* Other links */}
+    <span className="text-soft-grey/50">|</span>
+    <a
+      href="https://clarityweb.ie"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-xs text-soft-grey/60 hover:text-beige transition-colors duration-300"
+    >
+      Made by Clarity Web
+    </a>
+  </div>
+</div>
+```
+
 ---
 
 ## Штрафы за несоблюдение
