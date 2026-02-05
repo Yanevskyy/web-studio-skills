@@ -7,13 +7,13 @@
 ### Вариант 1: degit (рекомендуется)
 
 ```bash
-npx degit yourusername/web-studio-skills/.agent .agent
+npx degit Yanevskyy/web-studio-skills/.agent .agent
 ```
 
 ### Вариант 2: curl
 
 ```bash
-curl -sL https://github.com/yourusername/web-studio-skills/archive/main.tar.gz | tar xz
+curl -sL https://github.com/Yanevskyy/web-studio-skills/archive/main.tar.gz | tar xz
 mv web-studio-skills-main/.agent .
 rm -rf web-studio-skills-main
 ```
@@ -21,7 +21,7 @@ rm -rf web-studio-skills-main
 ### Вариант 3: git clone
 
 ```bash
-git clone https://github.com/yourusername/web-studio-skills.git temp-skills
+git clone https://github.com/Yanevskyy/web-studio-skills.git temp-skills
 mv temp-skills/.agent .
 rm -rf temp-skills
 ```
