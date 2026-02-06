@@ -37,6 +37,7 @@ rm -rf temp-skills
 - `design-system` — Tailwind токены и консистентность
 - `responsive-design` — Mobile-first паттерны
 - `accessibility` — WCAG чеклист
+- `semantic-ux-audit` — Смысловой аудит навигации и интентов
 
 ### SEO
 - `seo-technical` — Мета-теги, OG, schema.org, sitemap
