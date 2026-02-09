@@ -1,6 +1,6 @@
 # Web Studio Skills
 
-Набор из 14 скиллов для веб-разработки на React/Next.js + Tailwind CSS.
+Набор из 17 скиллов для веб-разработки на React/Next.js + Tailwind CSS.
 
 ## Установка
 
@@ -50,6 +50,11 @@ rm -rf temp-skills
 - `stripe-integration` — Платежи Stripe Checkout
 - `ecommerce-database` — Prisma схема для магазина
 - `email-integration` — Формы и транзакционные письма
+
+### CRM
+- `crm-core` — Клиенты, услуги, проекты: модели данных, CRUD, админ-UI
+- `crm-invoicing` — Инвойсы и платежи через Stripe Invoice API, ссылки на оплату
+- `crm-analytics` — Финансовые отчёты, дашборды, выручка, метрики
 
 ### Маркетинг
 - `google-analytics` — GA4, GTM, Search Console
