@@ -1,6 +1,6 @@
 # CRM Analytics — SQL Reference
 
-Готовые SQL-запросы для PostgreSQL / Supabase. Адаптируй имена таблиц под свой проект.
+Ready-to-use SQL queries for PostgreSQL / Supabase. Adapt table names to your project.
 
 ---
 
@@ -191,7 +191,7 @@ ORDER BY total_revenue DESC;
 
 ## Supabase View (optional)
 
-Если используешь Supabase, можно создать view для частых запросов:
+If you use Supabase, you can create a view for frequently used queries:
 
 ```sql
 CREATE OR REPLACE VIEW crm_revenue_monthly AS
