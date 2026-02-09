@@ -1,17 +1,17 @@
 ---
 name: design-system
-description: "Используй при создании нового проекта или рефакторинге существующего. Устанавливает дизайн-токены для Tailwind: цвета, шрифты, отступы. Гарантирует консистентность дизайна."
+description: "Use when creating a new project or refactoring an existing one. Sets design tokens for Tailwind: colors, fonts, spacing. Ensures design consistency."
 ---
 
-# Design System для Tailwind CSS
+# Design System for Tailwind CSS
 
-## Когда использовать
+## When to use
 
-**В НАЧАЛЕ КАЖДОГО ПРОЕКТА** — настрой дизайн-токены до написания компонентов. Это предотвращает "плывущий" дизайн.
+**AT THE START OF EVERY PROJECT** — set up design tokens before building components. This prevents inconsistent design.
 
 ---
 
-## Структура tailwind.config.js
+## tailwind.config.js Structure
 
 ```js
 /** @type {import('tailwindcss').Config} */
@@ -19,9 +19,9 @@ module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      // 1. ЦВЕТА
+      // 1. COLORS
       colors: {
-        // Бренд-цвета (именуйте по назначению, не по оттенку)
+        // Brand colors (name by purpose, not shade)
         primary: {
           DEFAULT: '#8B7355',
           light: '#A68B6A',
@@ -32,30 +32,30 @@ module.exports = {
           light: '#34495E',
           dark: '#1A252F',
         },
-        // Нейтральные
+        // Neutrals
         background: '#FFFBF5',
         surface: '#F5F0E8',
         border: '#E5DDD0',
-        // Текст
+        // Text
         text: {
           primary: '#2C3E50',
           secondary: '#6B7280',
           muted: '#9CA3AF',
         },
-        // Статусы
+        // Status
         success: '#22C55E',
         warning: '#F59E0B',
         error: '#EF4444',
       },
 
-      // 2. ТИПОГРАФИКА
+      // 2. TYPOGRAPHY
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        // Масштаб 1.25 (Major Third)
+        // Scale 1.25 (Major Third)
         xs: ['0.64rem', { lineHeight: '1rem' }],
         sm: ['0.8rem', { lineHeight: '1.25rem' }],
         base: ['1rem', { lineHeight: '1.5rem' }],
@@ -67,15 +67,14 @@ module.exports = {
         '5xl': ['3.815rem', { lineHeight: '1' }],
       },
 
-      // 3. ОТСТУПЫ (8px сетка)
+      // 3. SPACING (8px grid)
       spacing: {
-        // Используйте стандартные + кастомные
         '18': '4.5rem',
         '88': '22rem',
         '128': '32rem',
       },
 
-      // 4. СКРУГЛЕНИЯ
+      // 4. BORDER RADIUS
       borderRadius: {
         DEFAULT: '0.5rem',
         lg: '1rem',
@@ -83,14 +82,14 @@ module.exports = {
         '2xl': '2rem',
       },
 
-      // 5. ТЕНИ
+      // 5. SHADOWS
       boxShadow: {
         soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07)',
         medium: '0 4px 25px -5px rgba(0, 0, 0, 0.1)',
         hard: '0 10px 40px -10px rgba(0, 0, 0, 0.15)',
       },
 
-      // 6. АНИМАЦИИ
+      // 6. ANIMATIONS
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
         'fade-up': 'fadeUp 0.5s ease-out',
@@ -118,7 +117,7 @@ module.exports = {
 
 ---
 
-## CSS Variables для темизации
+## CSS Variables for Theming
 
 ```css
 /* src/index.css */
@@ -128,7 +127,7 @@ module.exports = {
 
 @layer base {
   :root {
-    /* Светлая тема */
+    /* Light theme */
     --color-background: 255 251 245;
     --color-surface: 245 240 232;
     --color-text-primary: 44 62 80;
@@ -136,7 +135,7 @@ module.exports = {
   }
 
   .dark {
-    /* Тёмная тема */
+    /* Dark theme */
     --color-background: 26 32 44;
     --color-surface: 45 55 72;
     --color-text-primary: 237 242 247;
@@ -146,7 +145,7 @@ module.exports = {
 ```
 
 ```js
-// tailwind.config.js — использование CSS variables
+// tailwind.config.js — using CSS variables
 colors: {
   background: 'rgb(var(--color-background) / <alpha-value>)',
   surface: 'rgb(var(--color-surface) / <alpha-value>)',
@@ -157,34 +156,34 @@ colors: {
 
 ---
 
-## Правила консистентности
+## Consistency Rules
 
-### Цвета
-- [ ] Используй только цвета из конфига (никаких `#123456` в компонентах)
-- [ ] Именуй по назначению: `primary`, `background`, не `brown`, `cream`
-- [ ] Проверяй контраст: текст на фоне должен быть читаем (4.5:1 минимум)
+### Colors
+- [ ] Use only config colors (no hardcoded `#123456` in components)
+- [ ] Name by purpose: `primary`, `background`, not `brown`, `cream`
+- [ ] Check contrast: text on background must be readable (4.5:1 minimum)
 
-### Типографика
-- [ ] Используй только размеры из `fontSize`
-- [ ] Заголовки: `font-serif`, текст: `font-sans`
-- [ ] Не больше 2-3 размеров шрифта на странице
+### Typography
+- [ ] Use only sizes from `fontSize`
+- [ ] Headings: `font-serif`, body: `font-sans`
+- [ ] No more than 2-3 font sizes per page
 
-### Отступы
-- [ ] Используй 8px сетку: `p-2` (8px), `p-4` (16px), `p-8` (32px)
-- [ ] Между секциями: `py-16` или `py-24`
-- [ ] Внутри карточек: `p-6` или `p-8`
+### Spacing
+- [ ] Use 8px grid: `p-2` (8px), `p-4` (16px), `p-8` (32px)
+- [ ] Between sections: `py-16` or `py-24`
+- [ ] Inside cards: `p-6` or `p-8`
 
-### Компоненты
-- [ ] Кнопки: одинаковые паддинги, скругления, hover-эффекты
-- [ ] Карточки: одинаковые тени, отступы
-- [ ] Формы: одинаковые стили инпутов
+### Components
+- [ ] Buttons: same padding, border-radius, hover effects
+- [ ] Cards: same shadows, spacing
+- [ ] Forms: same input styles
 
 ---
 
-## Чеклист нового проекта
+## New Project Checklist
 
-1. [ ] Определи бренд-цвета (получи от дизайнера/клиента)
-2. [ ] Выбери шрифты (Google Fonts)
-3. [ ] Настрой `tailwind.config.js`
-4. [ ] Создай базовые компоненты: Button, Card, Input
-5. [ ] Задокументируй токены (или покажи клиенту в Storybook)
+1. [ ] Define brand colors (get from designer/client)
+2. [ ] Choose fonts (Google Fonts)
+3. [ ] Configure `tailwind.config.js`
+4. [ ] Create base components: Button, Card, Input
+5. [ ] Document tokens (or show client in Storybook)

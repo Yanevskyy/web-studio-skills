@@ -1,32 +1,32 @@
 ---
 name: google-analytics
-description: "Используй при настройке аналитики. GA4, Google Tag Manager, Search Console. Отслеживание конверсий для Next.js."
+description: "Use when setting up analytics. GA4, Google Tag Manager, Search Console. Conversion tracking for Next.js."
 ---
 
-# Google Analytics для Next.js
+# Google Analytics for Next.js
 
-## Когда использовать
+## When to use
 
-**ПЕРЕД ЗАПУСКОМ** любого коммерческого сайта.
-
----
-
-## Шаг 1: Создание аккаунтов
-
-1. **Google Analytics 4:** [analytics.google.com](https://analytics.google.com) → Создать ресурс
-2. **Google Tag Manager:** [tagmanager.google.com](https://tagmanager.google.com) → Создать контейнер (Web)
-3. **Search Console:** [search.google.com/search-console](https://search.google.com/search-console) → Добавить ресурс
+**BEFORE LAUNCHING** any commercial website.
 
 ---
 
-## Шаг 2: Установка через GTM (рекомендуется)
+## Step 1: Create Accounts
+
+1. **Google Analytics 4:** [analytics.google.com](https://analytics.google.com) → Create property
+2. **Google Tag Manager:** [tagmanager.google.com](https://tagmanager.google.com) → Create container (Web)
+3. **Search Console:** [search.google.com/search-console](https://search.google.com/search-console) → Add property
+
+---
+
+## Step 2: Install via GTM (recommended)
 
 ### Environment:
 ```env
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXX
 ```
 
-### Компонент:
+### Component:
 ```tsx
 // components/GoogleTagManager.tsx
 'use client'
@@ -66,7 +66,7 @@ export function GoogleTagManager() {
 }
 ```
 
-### В layout:
+### In layout:
 ```tsx
 // app/layout.tsx
 import { GoogleTagManager } from '@/components/GoogleTagManager'
@@ -85,20 +85,19 @@ export default function RootLayout({ children }) {
 
 ---
 
-## Шаг 3: Настройка GA4 в GTM
+## Step 3: Configure GA4 in GTM
 
-1. В GTM: Tags → New → Google Analytics: GA4 Configuration
-2. Measurement ID: `G-XXXXXXXXXX` (из GA4)
+1. In GTM: Tags → New → Google Analytics: GA4 Configuration
+2. Measurement ID: `G-XXXXXXXXXX` (from GA4)
 3. Trigger: All Pages
 4. Publish
 
 ---
 
-## Шаг 4: Отслеживание событий
+## Step 4: Event Tracking
 
 ### DataLayer push:
 ```tsx
-// Отправка события
 declare global {
   interface Window {
     dataLayer: any[]
@@ -112,7 +111,7 @@ export function trackEvent(eventName: string, params?: Record<string, any>) {
   })
 }
 
-// Использование
+// Usage
 trackEvent('add_to_cart', {
   currency: 'EUR',
   value: 29.99,
@@ -120,16 +119,16 @@ trackEvent('add_to_cart', {
 })
 ```
 
-### E-commerce события:
-| Событие | Когда |
-|---------|-------|
-| `view_item` | Просмотр товара |
-| `add_to_cart` | Добавление в корзину |
-| `begin_checkout` | Начало оформления |
-| `purchase` | Успешная покупка |
+### E-commerce events:
+| Event | When |
+|-------|------|
+| `view_item` | Product view |
+| `add_to_cart` | Added to cart |
+| `begin_checkout` | Checkout started |
+| `purchase` | Successful purchase |
 
 ```tsx
-// Пример purchase
+// Purchase example
 trackEvent('purchase', {
   transaction_id: 'T12345',
   value: 99.99,
@@ -142,22 +141,22 @@ trackEvent('purchase', {
 
 ---
 
-## Шаг 5: Search Console
+## Step 5: Search Console
 
-1. Добавь сайт в Search Console
-2. Подтверди через DNS или HTML-тег
-3. Отправь sitemap: `https://example.com/sitemap.xml`
-4. Свяжи с GA4: GA4 → Admin → Product Links → Search Console
+1. Add site to Search Console
+2. Verify via DNS or HTML tag
+3. Submit sitemap: `https://example.com/sitemap.xml`
+4. Link with GA4: GA4 → Admin → Product Links → Search Console
 
 ---
 
-## Чеклист
+## Checklist
 
-- [ ] GA4 ресурс создан
-- [ ] GTM контейнер создан
-- [ ] GTM код добавлен на сайт
-- [ ] GA4 тег настроен в GTM
-- [ ] События e-commerce отслеживаются
-- [ ] Search Console подключён
-- [ ] Sitemap отправлен
-- [ ] GA4 и Search Console связаны
+- [ ] GA4 property created
+- [ ] GTM container created
+- [ ] GTM code added to site
+- [ ] GA4 tag configured in GTM
+- [ ] E-commerce events tracked
+- [ ] Search Console connected
+- [ ] Sitemap submitted
+- [ ] GA4 and Search Console linked

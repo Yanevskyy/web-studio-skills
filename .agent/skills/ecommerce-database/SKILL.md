@@ -1,25 +1,25 @@
 ---
 name: ecommerce-database
-description: "Используй при проектировании БД для интернет-магазина. Схемы для товаров, заказов, пользователей. Prisma + Supabase паттерны."
+description: "Use when designing a database for an online store. Schemas for products, orders, users. Prisma + Supabase patterns."
 ---
 
 # E-commerce Database Design
 
-## Когда использовать
+## When to use
 
-**ПРИ СТАРТЕ E-COMMERCE ПРОЕКТА** — спроектируй БД до написания кода.
+**WHEN STARTING AN E-COMMERCE PROJECT** — design the DB before writing code.
 
 ---
 
-## Рекомендуемый стек
+## Recommended Stack
 
 - **ORM:** Prisma
-- **Database:** Supabase (PostgreSQL) или PlanetScale (MySQL)
-- **Auth:** Supabase Auth или NextAuth.js
+- **Database:** Supabase (PostgreSQL) or PlanetScale (MySQL)
+- **Auth:** Supabase Auth or NextAuth.js
 
 ---
 
-## Установка Prisma
+## Prisma Installation
 
 ```bash
 npm install prisma @prisma/client
@@ -28,7 +28,7 @@ npx prisma init
 
 ---
 
-## Схема базы данных
+## Database Schema
 
 ```prisma
 // prisma/schema.prisma
@@ -42,7 +42,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============ ПОЛЬЗОВАТЕЛИ ============
+// ============ USERS ============
 
 model User {
   id        String   @id @default(cuid())
@@ -78,7 +78,7 @@ model Address {
   isDefault Boolean @default(false)
 }
 
-// ============ ТОВАРЫ ============
+// ============ PRODUCTS ============
 
 model Category {
   id       String    @id @default(cuid())
@@ -94,7 +94,7 @@ model Product {
   slug        String   @unique
   description String?
   price       Decimal  @db.Decimal(10, 2)
-  comparePrice Decimal? @db.Decimal(10, 2) // зачёркнутая цена
+  comparePrice Decimal? @db.Decimal(10, 2) // strikethrough price
   sku         String?  @unique
   stock       Int      @default(0)
   isActive    Boolean  @default(true)
@@ -121,7 +121,7 @@ model ProductImage {
 
 model ProductVariant {
   id        String  @id @default(cuid())
-  name      String  // "Красный / L"
+  name      String  // "Red / L"
   sku       String? @unique
   price     Decimal @db.Decimal(10, 2)
   stock     Int     @default(0)
@@ -129,7 +129,7 @@ model ProductVariant {
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-// ============ КОРЗИНА ============
+// ============ CART ============
 
 model CartItem {
   id        String  @id @default(cuid())
@@ -146,7 +146,7 @@ model CartItem {
   @@unique([userId, productId, variantId])
 }
 
-// ============ ЗАКАЗЫ ============
+// ============ ORDERS ============
 
 model Order {
   id              String      @id @default(cuid())
@@ -162,7 +162,7 @@ model Order {
   stripeSessionId String?
   stripePaymentId String?
   
-  // Адрес доставки (копия, не ссылка)
+  // Shipping address (copy, not reference)
   shippingName    String
   shippingStreet  String
   shippingCity    String
@@ -191,7 +191,7 @@ enum OrderStatus {
 model OrderItem {
   id        String  @id @default(cuid())
   quantity  Int
-  price     Decimal @db.Decimal(10, 2) // цена на момент покупки
+  price     Decimal @db.Decimal(10, 2) // price at time of purchase
   
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -199,22 +199,22 @@ model OrderItem {
   productId String
   product   Product @relation(fields: [productId], references: [id])
   
-  variantName String? // сохраняем название варианта
+  variantName String? // store variant name
 }
 ```
 
 ---
 
-## Миграции
+## Migrations
 
 ```bash
-# Создать миграцию
+# Create migration
 npx prisma migrate dev --name init
 
-# Применить на production
+# Apply in production
 npx prisma migrate deploy
 
-# Сгенерировать клиент
+# Generate client
 npx prisma generate
 ```
 
@@ -235,10 +235,10 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 ---
 
-## Примеры запросов
+## Example Queries
 
 ```ts
-// Получить товары с категорией
+// Get products with category
 const products = await prisma.product.findMany({
   where: { isActive: true },
   include: {
@@ -247,7 +247,7 @@ const products = await prisma.product.findMany({
   },
 })
 
-// Создать заказ
+// Create order
 const order = await prisma.order.create({
   data: {
     orderNumber: `ORD-${Date.now()}`,
@@ -257,7 +257,7 @@ const order = await prisma.order.create({
     tax: 0,
     total: 110,
     shippingName: 'John Doe',
-    // ...остальные поля
+    // ...remaining fields
     items: {
       create: cartItems.map(item => ({
         productId: item.productId,
@@ -271,11 +271,11 @@ const order = await prisma.order.create({
 
 ---
 
-## Чеклист
+## Checklist
 
-- [ ] Prisma установлен
-- [ ] DATABASE_URL в env
-- [ ] Схема создана
-- [ ] Миграции применены
-- [ ] Prisma Client сгенерирован
-- [ ] Базовые CRUD операции работают
+- [ ] Prisma installed
+- [ ] DATABASE_URL in env
+- [ ] Schema created
+- [ ] Migrations applied
+- [ ] Prisma Client generated
+- [ ] Basic CRUD operations working

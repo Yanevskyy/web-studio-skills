@@ -1,74 +1,74 @@
 ---
 name: accessibility
-description: "Используй для проверки доступности. WCAG чеклист: контраст, ARIA, навигация с клавиатуры для React/Next.js."
+description: "Use when checking accessibility. WCAG checklist: contrast, ARIA, keyboard navigation for React/Next.js."
 ---
 
 # Web Accessibility (a11y)
 
-## Когда использовать
+## When to use
 
-**ПРИ СОЗДАНИИ ЛЮБОГО ИНТЕРФЕЙСА** — доступность не опциональна.
-
----
-
-## Почему важно
-
-- 15% населения имеют инвалидность
-- SEO-бонус (Google учитывает доступность)
-- Требование закона в ЕС и США
-- Улучшает UX для всех
+**WHEN BUILDING ANY INTERFACE** — accessibility is not optional.
 
 ---
 
-## Чеклист WCAG 2.1
+## Why it matters
 
-### 1. Контраст текста
+- 15% of the population has a disability
+- SEO bonus (Google factors in accessibility)
+- Legal requirement in EU and US
+- Improves UX for everyone
 
-| Уровень | Соотношение |
-|---------|-------------|
-| AA (стандарт) | 4.5:1 для текста, 3:1 для заголовков |
-| AAA (идеал) | 7:1 для текста, 4.5:1 для заголовков |
+---
 
-**Инструменты:**
+## WCAG 2.1 Checklist
+
+### 1. Text Contrast
+
+| Level | Ratio |
+|-------|-------|
+| AA (standard) | 4.5:1 for text, 3:1 for headings |
+| AAA (ideal) | 7:1 for text, 4.5:1 for headings |
+
+**Tools:**
 - [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
 - [Colour Contrast Analyser](https://www.tpgi.com/color-contrast-checker/)
 
 ```tsx
-// ❌ Плохо
-<p className="text-gray-400 bg-gray-200">Низкий контраст</p>
+// ❌ Bad
+<p className="text-gray-400 bg-gray-200">Low contrast</p>
 
-// ✅ Хорошо
-<p className="text-gray-900 bg-white">Высокий контраст</p>
+// ✅ Good
+<p className="text-gray-900 bg-white">High contrast</p>
 ```
 
 ---
 
-### 2. Альтернативный текст
+### 2. Alternative Text
 
 ```tsx
-// ❌ Плохо
+// ❌ Bad
 <img src="photo.jpg" />
 <img src="photo.jpg" alt="image" />
 
-// ✅ Хорошо (информативные изображения)
-<img src="team.jpg" alt="Команда компании на встрече в офисе" />
+// ✅ Good (informative images)
+<img src="team.jpg" alt="Company team meeting at the office" />
 
-// ✅ Хорошо (декоративные изображения)
+// ✅ Good (decorative images)
 <img src="decoration.jpg" alt="" role="presentation" />
 ```
 
 ---
 
-### 3. Семантический HTML
+### 3. Semantic HTML
 
 ```tsx
-// ❌ Плохо
-<div onClick={handleClick}>Кнопка</div>
+// ❌ Bad
+<div onClick={handleClick}>Button</div>
 <div className="header">Header</div>
 <div className="nav">Navigation</div>
 
-// ✅ Хорошо
-<button onClick={handleClick}>Кнопка</button>
+// ✅ Good
+<button onClick={handleClick}>Button</button>
 <header>Header</header>
 <nav>Navigation</nav>
 <main>Main content</main>
@@ -77,44 +77,44 @@ description: "Используй для проверки доступности.
 
 ---
 
-### 4. Заголовки
+### 4. Headings
 
 ```tsx
-// ❌ Плохо (пропущен h2)
-<h1>Заголовок</h1>
-<h3>Подзаголовок</h3>
+// ❌ Bad (h2 skipped)
+<h1>Title</h1>
+<h3>Subtitle</h3>
 
-// ✅ Хорошо
-<h1>Заголовок страницы</h1>
-<h2>Секция</h2>
-<h3>Подсекция</h3>
+// ✅ Good
+<h1>Page Title</h1>
+<h2>Section</h2>
+<h3>Subsection</h3>
 ```
 
 ---
 
-### 5. Ссылки и кнопки
+### 5. Links and Buttons
 
 ```tsx
-// ❌ Плохо
-<a href="/page">Кликните здесь</a>
+// ❌ Bad
+<a href="/page">Click here</a>
 <button>X</button>
 
-// ✅ Хорошо
-<a href="/products">Смотреть все товары</a>
-<button aria-label="Закрыть модальное окно">
+// ✅ Good
+<a href="/products">View all products</a>
+<button aria-label="Close modal window">
   <XIcon />
 </button>
 ```
 
 ---
 
-### 6. Формы
+### 6. Forms
 
 ```tsx
-// ❌ Плохо
+// ❌ Bad
 <input type="email" placeholder="Email" />
 
-// ✅ Хорошо
+// ✅ Good
 <div>
   <label htmlFor="email">Email</label>
   <input
@@ -133,12 +133,12 @@ description: "Используй для проверки доступности.
 
 ---
 
-### 7. Навигация с клавиатуры
+### 7. Keyboard Navigation
 
 ```tsx
-// Фокус виден
+// Visible focus
 <button className="focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-  Кнопка
+  Button
 </button>
 
 // Skip link
@@ -146,7 +146,7 @@ description: "Используй для проверки доступности.
   href="#main-content"
   className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
 >
-  Перейти к основному контенту
+  Skip to main content
 </a>
 
 <main id="main-content">
@@ -156,49 +156,49 @@ description: "Используй для проверки доступности.
 
 ---
 
-### 8. ARIA атрибуты
+### 8. ARIA Attributes
 
 ```tsx
-// Модальное окно
+// Modal dialog
 <div
   role="dialog"
   aria-modal="true"
   aria-labelledby="modal-title"
 >
-  <h2 id="modal-title">Заголовок модала</h2>
+  <h2 id="modal-title">Modal Title</h2>
   ...
 </div>
 
-// Выпадающее меню
+// Dropdown menu
 <button
   aria-expanded={isOpen}
   aria-haspopup="menu"
 >
-  Меню
+  Menu
 </button>
 <ul role="menu" hidden={!isOpen}>
-  <li role="menuitem">Пункт 1</li>
+  <li role="menuitem">Item 1</li>
 </ul>
 
-// Загрузка
+// Loading state
 <button disabled={isLoading}>
   {isLoading ? (
-    <span aria-live="polite">Загрузка...</span>
+    <span aria-live="polite">Loading...</span>
   ) : (
-    'Отправить'
+    'Submit'
   )}
 </button>
 ```
 
 ---
 
-### 9. Tailwind utilities
+### 9. Tailwind Utilities
 
 ```tsx
-// Скрыто визуально, доступно для screen readers
-<span className="sr-only">Описание для screen reader</span>
+// Visually hidden, available for screen readers
+<span className="sr-only">Description for screen reader</span>
 
-// Фокус стили
+// Focus styles
 <button className="
   focus:outline-none
   focus:ring-2
@@ -209,30 +209,30 @@ description: "Используй для проверки доступности.
 
 ---
 
-## Тестирование
+## Testing
 
-### Инструменты:
+### Tools:
 - **axe DevTools** — Chrome extension
 - **WAVE** — [wave.webaim.org](https://wave.webaim.org)
 - **Lighthouse** — Accessibility audit
 - **NVDA/VoiceOver** — Screen readers
 
-### Ручное тестирование:
-1. [ ] Пройди весь сайт только клавиатурой (Tab, Enter, Escape)
-2. [ ] Проверь с VoiceOver (Mac) или NVDA (Windows)
-3. [ ] Увеличь масштаб до 200% — ничего не должно ломаться
+### Manual testing:
+1. [ ] Navigate entire site using keyboard only (Tab, Enter, Escape)
+2. [ ] Test with VoiceOver (Mac) or NVDA (Windows)
+3. [ ] Zoom to 200% — nothing should break
 
 ---
 
-## Чеклист
+## Checklist
 
-- [ ] Контраст текста минимум 4.5:1
-- [ ] Все изображения с alt
-- [ ] Семантический HTML (header, nav, main, footer)
-- [ ] Заголовки в правильном порядке
-- [ ] Формы с label
-- [ ] Кнопки/ссылки с понятным текстом
-- [ ] Фокус виден при навигации Tab
-- [ ] Skip link для навигации
-- [ ] Модалы с правильными ARIA
+- [ ] Text contrast at least 4.5:1
+- [ ] All images have alt text
+- [ ] Semantic HTML (header, nav, main, footer)
+- [ ] Headings in correct order
+- [ ] Forms have labels
+- [ ] Buttons/links have descriptive text
+- [ ] Focus visible on Tab navigation
+- [ ] Skip link for navigation
+- [ ] Modals with correct ARIA
 - [ ] Lighthouse Accessibility > 90

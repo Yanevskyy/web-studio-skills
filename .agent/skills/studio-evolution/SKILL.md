@@ -1,172 +1,156 @@
 ---
 name: studio-evolution
-description: "Мета-скилл. Анализирует работу в проекте и предлагает улучшения для скиллов и workflows студии. Используй периодически или в конце проекта."
+description: "Meta-skill. Analyzes project work and proposes improvements for skills and workflows. Use periodically or at the end of a project."
 ---
 
 # Studio Evolution
 
-## Назначение
+## Purpose
 
-Этот скилл помогает **эволюционировать** набор скиллов и workflows студии на основе реального опыта работы.
-
----
-
-## Когда использовать
-
-1. **В конце каждого проекта** — ретроспектива
-2. **При повторяющихся действиях** — если делаешь что-то 3+ раза
-3. **При проблемах** — если существующий скилл не помог
-4. **По запросу пользователя** — `/studio-evolution`
+This skill helps **evolve** the studio's skills and workflows based on real project experience.
 
 ---
 
-## Процесс анализа
+## When to use
 
-### 1. Аудит текущей сессии
-
-Проанализируй историю работы в этом проекте:
-
-- Какие задачи решались?
-- Какие скиллы использовались?
-- Какие скиллы НЕ использовались, но могли бы помочь?
-- Были ли повторяющиеся действия?
-- Были ли нестандартные решения?
-
-### 2. Проверка существующих скиллов
-
-Для каждого использованного скилла спроси:
-
-| Вопрос | Действие если "Да" |
-|--------|-------------------|
-| Скилл помог решить задачу? | ✅ Оставить |
-| Чего-то не хватало? | 📝 Предложить дополнение |
-| Были устаревшие советы? | 🔄 Предложить обновление |
-| Скилл вообще не понадобился? | 🤔 Проверить актуальность |
-
-### 3. Поиск новых паттернов
-
-Обрати внимание на:
-
-- **Повторяющийся код** → Можно ли это добавить в скилл?
-- **Повторяющиеся команды** → Можно ли создать workflow?
-- **Нестандартные решения** → Можно ли задокументировать?
-- **Проблемы без скилла** → Нужен новый скилл?
-
-### 4. Проверка workflows
-
-Для каждого workflow:
-
-| Вопрос | Действие |
-|--------|----------|
-| Workflow использовался? | Если нет — нужен ли он? |
-| Все шаги были полезны? | Удалить лишние |
-| Чего-то не хватало? | Добавить шаги |
-| Порядок был логичным? | Переорганизовать |
+1. **At the end of each project** — retrospective
+2. **When actions repeat** — if you do something 3+ times
+3. **When issues arise** — if an existing skill didn't help
+4. **On user request** — `/studio-evolution`
 
 ---
 
-## Формат предложений
+## Analysis Process
 
-Когда находишь что-то для улучшения, сообщи в таком формате:
+### 1. Audit Current Session
 
-### Предложение: [Название]
+Analyze the work history in this project:
 
-**Тип:** Новый скилл / Новый workflow / Изменение скилла / Изменение workflow
+- What tasks were solved?
+- Which skills were used?
+- Which skills were NOT used but could have helped?
+- Were there repeating actions?
+- Were there non-standard solutions?
 
-**Причина:**
-> Краткое описание почему это нужно
+### 2. Review Existing Skills
 
-**Что добавить/изменить:**
+For each used skill ask:
+
+| Question | Action if "Yes" |
+|----------|----------------|
+| Skill helped solve the task? | Keep it |
+| Something was missing? | Propose addition |
+| Outdated advice? | Propose update |
+| Skill wasn't needed at all? | Check relevance |
+
+### 3. Find New Patterns
+
+Look for:
+
+- **Repeating code** → Can it be added to a skill?
+- **Repeating commands** → Can we create a workflow?
+- **Non-standard solutions** → Can we document them?
+- **Problems without a skill** → Need a new skill?
+
+### 4. Review Workflows
+
+For each workflow:
+
+| Question | Action |
+|----------|--------|
+| Was it used? | If not — is it needed? |
+| Were all steps useful? | Remove unnecessary ones |
+| Was something missing? | Add steps |
+| Was the order logical? | Reorganize |
+
+---
+
+## Proposal Format
+
+When you find something to improve, report in this format:
+
+### Proposal: [Name]
+
+**Type:** New skill / New workflow / Skill change / Workflow change
+
+**Reason:**
+> Brief description of why this is needed
+
+**What to add/change:**
 ```markdown
-[Конкретные изменения или новый контент]
+[Specific changes or new content]
 ```
 
-**Приоритет:** Высокий / Средний / Низкий
+**Priority:** High / Medium / Low
 
 ---
 
-## Примеры предложений
+## Example Proposals
 
-### Пример 1: Новый скилл
+### Example 1: New Skill
 
-**Тип:** Новый скилл `image-optimization`
+**Type:** New skill `image-optimization`
 
-**Причина:**
-> В трёх последних проектах вручную конвертировали изображения в WebP и настраивали lazy loading. Это можно автоматизировать.
+**Reason:**
+> In the last three projects we manually converted images to WebP and set up lazy loading. This can be automated.
 
-**Что добавить:**
-- Чеклист оптимизации изображений
-- Команды для конвертации
-- Patterns для Next.js Image
+**What to add:**
+- Image optimization checklist
+- Conversion commands
+- Patterns for Next.js Image
 
 ---
 
-### Пример 2: Изменение workflow
+### Example 2: Workflow Change
 
-**Тип:** Изменение `deploy-preview.md`
+**Type:** Change `deploy-preview.md`
 
-**Причина:**
-> В workflow не было шага проверки на мобильном через BrowserStack. Это важно для клиентов без доступа к разным устройствам.
+**Reason:**
+> The workflow didn't include a mobile testing step via BrowserStack. Important for clients without access to various devices.
 
-**Что добавить:**
+**What to add:**
 ```markdown
-9.5. Проверь на BrowserStack или LambdaTest (если нет реального устройства)
-```
-
----
-
-### Пример 3: Изменение скилла
-
-**Тип:** Изменение `seo-technical`
-
-**Причина:**
-> Скилл не упоминает hreflang для многоязычных сайтов. Уже второй проект с локализацией.
-
-**Что добавить:**
-```markdown
-### Многоязычность
-- [ ] hreflang теги для всех языковых версий
-- [ ] x-default для основного языка
+9.5. Test on BrowserStack or LambdaTest (if no real device available)
 ```
 
 ---
 
-## Действия после анализа
+## Actions After Analysis
 
-1. **Если нашёл улучшение** — предложи пользователю
-2. **Если пользователь одобрил** — внеси изменения
-3. **Запуш изменения в GitHub репо** `web-studio-skills`
-4. **Обнови README** если добавился новый скилл/workflow
-
----
-
-## Автоматические триггеры
-
-Запускай этот скилл автоматически когда:
-
-- [ ] Проект завершён (после финального деплоя)
-- [ ] Пользователь сделал что-то нестандартное 3+ раза
-- [ ] Пользователь явно сказал "это надо запомнить"
-- [ ] Прошло 5+ проектов с последнего review
+1. **If improvement found** — propose to user
+2. **If user approves** — make changes
+3. **Push changes to GitHub** repo `web-studio-skills`
+4. **Update README** if a new skill/workflow was added
 
 ---
 
-## Чеклист ретроспективы
+## Automatic Triggers
 
-В конце проекта пройди этот чеклист:
+Run this skill automatically when:
 
-- [ ] Какие скиллы использовались?
-- [ ] Какие скиллы НЕ использовались?
-- [ ] Что делалось вручную, но могло быть в скилле?
-- [ ] Какие workflows использовались?
-- [ ] Были ли отклонения от workflow?
-- [ ] Есть ли предложения по улучшению?
-- [ ] Нужно ли что-то добавить в GitHub репо?
+- [ ] Project is finished (after final deploy)
+- [ ] User did something non-standard 3+ times
+- [ ] User explicitly said "we need to remember this"
+- [ ] 5+ projects since the last review
 
 ---
 
-## Философия
+## Retrospective Checklist
 
-> **"Каждый проект делает студию умнее"**
+At the end of a project, go through this checklist:
 
-Цель — не просто закончить проект, а извлечь из него знания для будущих проектов. Скиллы и workflows должны эволюционировать вместе с опытом студии.
+- [ ] Which skills were used?
+- [ ] Which skills were NOT used?
+- [ ] What was done manually but could be in a skill?
+- [ ] Which workflows were used?
+- [ ] Were there deviations from workflows?
+- [ ] Any improvement proposals?
+- [ ] Need to add anything to the GitHub repo?
+
+---
+
+## Philosophy
+
+> **"Every project makes the studio smarter"**
+
+The goal is not just to finish a project, but to extract knowledge for future projects. Skills and workflows should evolve together with the studio's experience.

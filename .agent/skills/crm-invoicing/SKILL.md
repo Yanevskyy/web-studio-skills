@@ -1,48 +1,48 @@
 ---
 name: crm-invoicing
-description: "Используй при создании инвойсов и приёме платежей через Stripe Invoice API. Ссылки на оплату, вебхуки, статусы инвойсов. Для CRM (НЕ для e-commerce checkout — для этого используй stripe-integration)."
+description: "Use when creating invoices and accepting payments via Stripe Invoice API. Payment links, webhooks, invoice statuses. For CRM (NOT for e-commerce checkout — use stripe-integration for that)."
 ---
 
-# CRM Invoicing — Инвойсы и Платежи (Stripe)
+# CRM Invoicing — Invoices & Payments (Stripe)
 
-## Когда использовать
+## When to use
 
-**ПРИ СОЗДАНИИ ИНВОЙСОВ И ПРИЁМЕ ПЛАТЕЖЕЙ** в CRM-системе.
+**WHEN CREATING INVOICES AND ACCEPTING PAYMENTS** in a CRM system.
 
-Этот скилл отвечает ТОЛЬКО за:
-- Модель инвойсов (таблица `crm_invoices`)
-- Интеграцию со Stripe Invoice API
-- Создание платёжных ссылок
-- Обработку вебхуков
+This skill is ONLY about:
+- Invoice model (`crm_invoices` table)
+- Stripe Invoice API integration
+- Creating payment links
+- Handling webhooks
 
-**НЕ входит** в этот скилл:
-- Схема клиентов и услуг → используй `crm-core`
-- Финансовые отчёты и дашборды → используй `crm-analytics`
+**NOT in scope:**
+- Customer and service schemas → use `crm-core`
+- Financial reports and dashboards → use `crm-analytics`
 
-**Отличие от `stripe-integration`:**
-> `stripe-integration` — это Stripe Checkout для e-commerce (корзина → оплата → заказ).
-> `crm-invoicing` — это Stripe Invoicing для CRM (инвойс → ссылка → оплата клиентом).
-
----
-
-## Шаг 1: Проверка зависимостей
-
-Перед началом убедись, что существуют:
-- Таблица `customers` (из скилла `crm-core`)
-- Таблица `crm_services` (из скилла `crm-core`)
-
-Если их нет — сначала примени скилл `crm-core`.
-
-### Уточняющие вопросы:
-
-1. Разовые платежи, подписки или и то и другое?
-2. Провайдер: Stripe или другой?
-3. Способы оплаты: карты, кошельки, банковский перевод?
-4. Нужны ли юридические поля (VAT, налоги)?
+**Difference from `stripe-integration`:**
+> `stripe-integration` = Stripe Checkout for e-commerce (cart → pay → order).
+> `crm-invoicing` = Stripe Invoicing for CRM (invoice → link → client pays).
 
 ---
 
-## Шаг 2: Установка
+## Step 1: Check Dependencies
+
+Before starting, verify these exist:
+- `customers` table (from `crm-core` skill)
+- `crm_services` table (from `crm-core` skill)
+
+If missing — apply `crm-core` first.
+
+### Clarifying questions:
+
+1. One-time payments, subscriptions, or both?
+2. Provider: Stripe or other?
+3. Payment methods: cards, wallets, bank transfer?
+4. Legal fields needed (VAT, tax)?
+
+---
+
+## Step 2: Installation
 
 ```bash
 npm install stripe
@@ -56,43 +56,33 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 ---
 
-## Шаг 3: Схема инвойсов
+## Step 3: Invoice Schema
 
 ### Prisma
 
 ```prisma
-// prisma/schema.prisma
-
 model Invoice {
   id                  String        @id @default(cuid())
   invoiceNumber       String        @unique   // e.g. "INV-2026-001"
   status              InvoiceStatus @default(DRAFT)
 
-  // Amounts (snapshot at creation time)
   amount              Decimal       @db.Decimal(10, 2)
   currency            String        @default("EUR")
 
-  // Dates
   dueDate             DateTime?
   sentAt              DateTime?
   paidAt              DateTime?
-
-  // Notes
   note                String?
 
-  // Stripe fields
   stripeCustomerId    String?
   stripeInvoiceId     String?
   stripeInvoiceUrl    String?       // hosted_invoice_url
   stripePdfUrl        String?       // invoice_pdf
 
-  // Relations
   customerId          String
   customer            Customer      @relation(fields: [customerId], references: [id])
-
   serviceId           String?
   service             Service?      @relation(fields: [serviceId], references: [id])
-
   projectId           String?
   project             Project?      @relation(fields: [projectId], references: [id])
 
@@ -112,39 +102,11 @@ enum InvoiceStatus {
 }
 ```
 
-### Supabase SQL (альтернатива)
-
-```sql
-CREATE TABLE crm_invoices (
-  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  invoice_number      TEXT NOT NULL UNIQUE,
-  status              TEXT NOT NULL DEFAULT 'draft'
-                      CHECK (status IN ('draft','sent','paid','failed','void','uncollectible')),
-  amount              NUMERIC(10,2) NOT NULL,
-  currency            TEXT NOT NULL DEFAULT 'EUR',
-  due_date            DATE,
-  sent_at             TIMESTAMPTZ,
-  paid_at             TIMESTAMPTZ,
-  note                TEXT,
-  stripe_customer_id  TEXT,
-  stripe_invoice_id   TEXT,
-  stripe_invoice_url  TEXT,
-  stripe_pdf_url      TEXT,
-  customer_id         UUID NOT NULL REFERENCES customers(id) ON DELETE RESTRICT,
-  service_id          UUID REFERENCES crm_services(id) ON DELETE SET NULL,
-  project_id          UUID REFERENCES crm_projects(id) ON DELETE SET NULL,
-  created_at          TIMESTAMPTZ DEFAULT now(),
-  updated_at          TIMESTAMPTZ DEFAULT now()
-);
-
-ALTER TABLE crm_invoices ENABLE ROW LEVEL SECURITY;
-```
-
-**Важно:** Инвойсы хранят snapshot суммы. Если услуга позже изменится — инвойс остаётся с исходной суммой.
+**Important:** Invoices store an amount snapshot. If a service changes later, the invoice keeps its original amount.
 
 ---
 
-## Шаг 4: Stripe-клиент
+## Step 4: Stripe Client
 
 ```ts
 // lib/stripe.ts
@@ -159,11 +121,11 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 })
 ```
 
-**Одна точка инициализации.** Не создавай Stripe-клиенты в других файлах.
+**Single initialization point.** Do not create Stripe clients elsewhere.
 
 ---
 
-## Шаг 5: Создание инвойса
+## Step 5: Create Invoice
 
 ```ts
 // lib/crm-invoices.ts
@@ -180,22 +142,15 @@ interface CreateInvoiceInput {
 
 export async function createInvoice(input: CreateInvoiceInput) {
   // 1. Load service and verify it's active
-  const service = await prisma.service.findUnique({
-    where: { id: input.serviceId },
-  })
-  if (!service || !service.isActive) {
-    throw new Error('Service not found or inactive')
-  }
+  const service = await prisma.service.findUnique({ where: { id: input.serviceId } })
+  if (!service || !service.isActive) throw new Error('Service not found or inactive')
 
   // 2. Load customer
-  const customer = await prisma.customer.findUnique({
-    where: { id: input.customerId },
-  })
+  const customer = await prisma.customer.findUnique({ where: { id: input.customerId } })
   if (!customer) throw new Error('Customer not found')
 
   // 3. Create or reuse Stripe Customer
   let stripeCustomerId: string
-
   const existing = await prisma.invoice.findFirst({
     where: { customerId: customer.id, stripeCustomerId: { not: null } },
     select: { stripeCustomerId: true },
@@ -215,7 +170,7 @@ export async function createInvoice(input: CreateInvoiceInput) {
   // 4. Create Stripe invoice item
   await stripe.invoiceItems.create({
     customer: stripeCustomerId,
-    amount: Math.round(Number(service.amount) * 100), // cents
+    amount: Math.round(Number(service.amount) * 100),
     currency: service.currency.toLowerCase(),
     description: `${service.name} — ${service.code}`,
   })
@@ -227,11 +182,7 @@ export async function createInvoice(input: CreateInvoiceInput) {
     days_until_due: input.dueDate
       ? Math.max(1, Math.ceil((input.dueDate.getTime() - Date.now()) / 86400000))
       : 14,
-    metadata: {
-      customerId: customer.id,
-      serviceId: service.id,
-      projectId: input.projectId ?? '',
-    },
+    metadata: { customerId: customer.id, serviceId: service.id, projectId: input.projectId ?? '' },
   })
 
   // 6. Finalize to get payment URL
@@ -244,32 +195,22 @@ export async function createInvoice(input: CreateInvoiceInput) {
   // 8. Save to DB
   const invoice = await prisma.invoice.create({
     data: {
-      invoiceNumber,
-      status: 'SENT',
-      amount: service.amount,
-      currency: service.currency,
-      dueDate: input.dueDate,
-      sentAt: new Date(),
-      note: input.note,
-      stripeCustomerId,
-      stripeInvoiceId: finalized.id,
+      invoiceNumber, status: 'SENT',
+      amount: service.amount, currency: service.currency,
+      dueDate: input.dueDate, sentAt: new Date(), note: input.note,
+      stripeCustomerId, stripeInvoiceId: finalized.id,
       stripeInvoiceUrl: finalized.hosted_invoice_url,
       stripePdfUrl: finalized.invoice_pdf,
-      customerId: customer.id,
-      serviceId: service.id,
-      projectId: input.projectId,
+      customerId: customer.id, serviceId: service.id, projectId: input.projectId,
     },
   })
 
   return {
     success: true,
     data: {
-      invoiceId: invoice.id,
-      invoiceNumber: invoice.invoiceNumber,
-      paymentUrl: finalized.hosted_invoice_url,
-      pdfUrl: finalized.invoice_pdf,
-      amount: Number(service.amount),
-      currency: service.currency,
+      invoiceId: invoice.id, invoiceNumber: invoice.invoiceNumber,
+      paymentUrl: finalized.hosted_invoice_url, pdfUrl: finalized.invoice_pdf,
+      amount: Number(service.amount), currency: service.currency,
     },
   }
 }
@@ -277,7 +218,7 @@ export async function createInvoice(input: CreateInvoiceInput) {
 
 ---
 
-## Шаг 6: API Route
+## Step 6: API Route
 
 ```ts
 // app/api/invoices/create/route.ts
@@ -290,17 +231,14 @@ export async function POST(req: Request) {
     const result = await createInvoice(body)
     return NextResponse.json(result)
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 400 }
-    )
+    return NextResponse.json({ success: false, error: error.message }, { status: 400 })
   }
 }
 ```
 
 ---
 
-## Шаг 7: Webhook
+## Step 7: Webhook
 
 ```ts
 // app/api/invoices/webhook/route.ts
@@ -314,13 +252,8 @@ export async function POST(req: Request) {
   const signature = req.headers.get('stripe-signature')!
 
   let event: Stripe.Event
-
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
   } catch (err) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
@@ -334,14 +267,12 @@ export async function POST(req: Request) {
         data: { status: 'PAID', paidAt: new Date() },
       })
       break
-
     case 'invoice.payment_failed':
       await prisma.invoice.updateMany({
         where: { stripeInvoiceId: stripeInvoice.id },
         data: { status: 'FAILED' },
       })
       break
-
     case 'invoice.voided':
       await prisma.invoice.updateMany({
         where: { stripeInvoiceId: stripeInvoice.id },
@@ -354,22 +285,20 @@ export async function POST(req: Request) {
 }
 ```
 
-### Локальное тестирование вебхуков:
-
+### Local webhook testing:
 ```bash
 stripe listen --forward-to localhost:3000/api/invoices/webhook
 ```
 
 ---
 
-## Шаг 8: Интеграция в CRM UI
+## Step 8: CRM UI Integration
 
-Добавь кнопку на страницу клиента или проекта (НЕ переделывай весь CRM):
+Add a button on the customer or project page (do NOT redesign the whole CRM):
 
 ```tsx
 // components/crm/CreateInvoiceButton.tsx
 'use client'
-
 import { useState } from 'react'
 
 interface Props {
@@ -390,24 +319,16 @@ export function CreateInvoiceButton({ customerId, services, projectId }: Props) 
       body: JSON.stringify({ customerId, serviceId, projectId }),
     })
     const data = await res.json()
-    if (data.success) {
-      setResult(data.data)
-    }
+    if (data.success) setResult(data.data)
     setLoading(false)
   }
 
   if (result) {
     return (
       <div className="rounded-lg border p-4 bg-green-50">
-        <p className="font-medium text-green-800">Инвойс создан!</p>
-        <a
-          href={result.paymentUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline"
-        >
-          Ссылка на оплату →
-        </a>
+        <p className="font-medium text-green-800">Invoice created!</p>
+        <a href={result.paymentUrl} target="_blank" rel="noopener noreferrer"
+          className="text-blue-600 underline">Payment link &rarr;</a>
       </div>
     )
   }
@@ -415,13 +336,9 @@ export function CreateInvoiceButton({ customerId, services, projectId }: Props) 
   return (
     <div className="space-y-2">
       {services.map((s) => (
-        <button
-          key={s.id}
-          onClick={() => handleCreate(s.id)}
-          disabled={loading}
-          className="btn btn-outline w-full text-left"
-        >
-          Выставить: {s.name} — {s.amount} {s.currency}
+        <button key={s.id} onClick={() => handleCreate(s.id)} disabled={loading}
+          className="btn btn-outline w-full text-left">
+          Invoice: {s.name} — {s.amount} {s.currency}
         </button>
       ))}
     </div>
@@ -431,48 +348,48 @@ export function CreateInvoiceButton({ customerId, services, projectId }: Props) 
 
 ---
 
-## Правила
+## Rules
 
-- **Единая точка Stripe-клиента** — только `lib/stripe.ts`.
-- **Никогда не хардкодь** реальные Stripe-ключи или ID.
-- **Не полагайся на клиентский стейт** для определения оплачен ли инвойс — только вебхуки.
-- **Инвойсы не удаляются** — используй `void` для отмены.
-- **Snapshot суммы** — инвойс хранит `amount` на момент создания.
+- **Single Stripe client** — only `lib/stripe.ts`.
+- **Never hardcode** real Stripe keys or IDs.
+- **Don't rely on client state** for payment status — use webhooks only.
+- **Invoices are never deleted** — use `void` to cancel.
+- **Amount snapshot** — invoice stores `amount` at creation time.
 
 ---
 
-## Чеклист
+## Checklist
 
-### Настройка
-- [ ] `stripe` пакет установлен
-- [ ] `STRIPE_SECRET_KEY` в env
-- [ ] `STRIPE_WEBHOOK_SECRET` в env
-- [ ] `lib/stripe.ts` создан (единственный инстанс)
+### Setup
+- [ ] `stripe` package installed
+- [ ] `STRIPE_SECRET_KEY` in env
+- [ ] `STRIPE_WEBHOOK_SECRET` in env
+- [ ] `lib/stripe.ts` created (single instance)
 
-### Схема данных
-- [ ] Таблица `crm_invoices` создана
-- [ ] FK на customers, services, projects
-- [ ] Миграция применена
+### Data Schema
+- [ ] `crm_invoices` table created
+- [ ] FK to customers, services, projects
+- [ ] Migration applied
 
-### Основной flow
-- [ ] Создание инвойса (service + customer → Stripe Invoice → DB)
-- [ ] Финализация и получение `hosted_invoice_url`
-- [ ] API route `POST /api/invoices/create` работает
-- [ ] Ответ содержит paymentUrl и invoiceNumber
+### Main Flow
+- [ ] Invoice creation (service + customer → Stripe Invoice → DB)
+- [ ] Finalization and `hosted_invoice_url` obtained
+- [ ] API route `POST /api/invoices/create` works
+- [ ] Response includes paymentUrl and invoiceNumber
 
-### Вебхуки
-- [ ] Route `POST /api/invoices/webhook` создан
-- [ ] Подпись Stripe верифицируется
-- [ ] `invoice.paid` → статус PAID + paidAt
-- [ ] `invoice.payment_failed` → статус FAILED
-- [ ] `invoice.voided` → статус VOID
+### Webhooks
+- [ ] Route `POST /api/invoices/webhook` created
+- [ ] Stripe signature verified
+- [ ] `invoice.paid` → status PAID + paidAt
+- [ ] `invoice.payment_failed` → status FAILED
+- [ ] `invoice.voided` → status VOID
 
 ### UI
-- [ ] Кнопка "Выставить инвойс" на странице клиента
-- [ ] Показ ссылки на оплату после создания
-- [ ] Список инвойсов клиента с фильтром по статусу
+- [ ] "Create Invoice" button on customer page
+- [ ] Payment link shown after creation
+- [ ] Customer invoice list with status filter
 
-### Тестирование
-- [ ] `stripe listen` для локальных вебхуков
-- [ ] Тестовая карта `4242 4242 4242 4242`
-- [ ] Production ключи перед запуском
+### Testing
+- [ ] `stripe listen` for local webhooks
+- [ ] Test card `4242 4242 4242 4242`
+- [ ] Production keys before launch

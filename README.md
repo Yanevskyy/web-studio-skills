@@ -1,16 +1,16 @@
 # Web Studio Skills
 
-Набор из 17 скиллов для веб-разработки на React/Next.js + Tailwind CSS.
+A collection of 23 AI skills for web development with React/Next.js + Tailwind CSS.
 
-## Установка
+## Installation
 
-### Вариант 1: degit (рекомендуется)
+### Option 1: degit (recommended)
 
 ```bash
 npx degit Yanevskyy/web-studio-skills/.agent .agent
 ```
 
-### Вариант 2: curl
+### Option 2: curl
 
 ```bash
 curl -sL https://github.com/Yanevskyy/web-studio-skills/archive/main.tar.gz | tar xz
@@ -18,7 +18,7 @@ mv web-studio-skills-main/.agent .
 rm -rf web-studio-skills-main
 ```
 
-### Вариант 3: git clone
+### Option 3: git clone
 
 ```bash
 git clone https://github.com/Yanevskyy/web-studio-skills.git temp-skills
@@ -26,44 +26,53 @@ mv temp-skills/.agent .
 rm -rf temp-skills
 ```
 
-## Содержимое
+## Contents
 
-### Процесс
-- `brainstorming` — Обсуждение идеи перед реализацией
-- `writing-plans` — Детальные планы реализации
-- `using-superpowers` — Как использовать скиллы
+### Process
+- `brainstorming` — Collaborative idea exploration before implementation
+- `writing-plans` — Detailed implementation plans with TDD
+- `using-superpowers` — How to discover and use skills
 
-### Дизайн
-- `design-system` — Tailwind токены и консистентность
-- `responsive-design` — Mobile-first паттерны
-- `accessibility` — WCAG чеклист
-- `semantic-ux-audit` — Смысловой аудит навигации и интентов
+### Design
+- `design-system` — Tailwind design tokens and consistency
+- `responsive-design` — Mobile-first patterns
+- `accessibility` — WCAG checklist
+- `hero-excellence` — Hero section patterns and effects
+- `mobile-ux-excellence` — Mobile UX polish and wow-effects
+- `semantic-ux-audit` — Semantic navigation and intent audit
 
 ### SEO
-- `seo-technical` — Мета-теги, OG, schema.org, sitemap
-- `seo-performance` — Core Web Vitals оптимизация
+- `seo-technical` — Meta tags, OG, schema.org, sitemap
+- `seo-performance` — Core Web Vitals optimization
 
 ### Deploy
-- `vercel-deploy` — Автодеплой и настройка доменов
+- `vercel-deploy` — Auto-deploy and domain configuration
 
 ### E-commerce
-- `stripe-integration` — Платежи Stripe Checkout
-- `ecommerce-database` — Prisma схема для магазина
-- `email-integration` — Формы и транзакционные письма
+- `stripe-integration` — Stripe Checkout payments
+- `ecommerce-database` — Prisma schema for online store
+- `email-integration` — Forms and transactional emails
 
 ### CRM
-- `crm-core` — Клиенты, услуги, проекты: модели данных, CRUD, админ-UI
-- `crm-invoicing` — Инвойсы и платежи через Stripe Invoice API, ссылки на оплату
-- `crm-analytics` — Финансовые отчёты, дашборды, выручка, метрики
+- `crm-core` — Customers, services, projects: data models, CRUD, admin UI
+- `crm-invoicing` — Invoices and payments via Stripe Invoice API, payment links
+- `crm-analytics` — Financial reports, dashboards, revenue metrics
 
-### Маркетинг
+### Marketing
 - `google-analytics` — GA4, GTM, Search Console
-- `facebook-pixel` — Meta Pixel и события
+- `facebook-pixel` — Meta Pixel and events
 
-## Использование
+### Compliance
+- `gdpr-compliance` — GDPR/CCPA checklist, cookie consent, legal pages
 
-После установки скиллы будут автоматически использоваться AI-агентом при работе над проектом.
+### Meta
+- `studio-evolution` — Retrospective analysis and skill improvement proposals
+- `blog-system` — Production-ready blog system with content strategy
 
-## Лицензия
+## Usage
+
+After installation, skills are automatically used by the AI agent when working on a project.
+
+## License
 
 MIT

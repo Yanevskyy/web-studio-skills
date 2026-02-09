@@ -1,34 +1,34 @@
 ---
 name: seo-performance
-description: "Используй для оптимизации скорости. Core Web Vitals: LCP, FID, CLS. Lighthouse аудит для Next.js."
+description: "Use for speed optimization. Core Web Vitals: LCP, FID, CLS. Lighthouse audit for Next.js."
 ---
 
 # SEO Performance (Core Web Vitals)
 
-## Когда использовать
+## When to use
 
-**ПЕРЕД ЗАПУСКОМ** и **РЕГУЛЯРНО** для поддержания позиций в Google.
+**BEFORE LAUNCH** and **REGULARLY** to maintain Google rankings.
 
 ---
 
 ## Core Web Vitals
 
-| Метрика | Что измеряет | Хорошо | Плохо |
-|---------|--------------|--------|-------|
-| **LCP** (Largest Contentful Paint) | Скорость загрузки | < 2.5s | > 4s |
-| **FID** (First Input Delay) | Отзывчивость | < 100ms | > 300ms |
-| **CLS** (Cumulative Layout Shift) | Стабильность | < 0.1 | > 0.25 |
+| Metric | What it Measures | Good | Poor |
+|--------|-----------------|------|------|
+| **LCP** (Largest Contentful Paint) | Load speed | < 2.5s | > 4s |
+| **FID** (First Input Delay) | Responsiveness | < 100ms | > 300ms |
+| **CLS** (Cumulative Layout Shift) | Visual stability | < 0.1 | > 0.25 |
 
 ---
 
-## Шаг 1: Измерение
+## Step 1: Measurement
 
-### Инструменты:
+### Tools:
 - [PageSpeed Insights](https://pagespeed.web.dev/)
-- [Lighthouse](chrome://inspect/#devices) в Chrome DevTools
+- [Lighthouse](chrome://inspect/#devices) in Chrome DevTools
 - [Search Console](https://search.google.com/search-console) → Core Web Vitals
 
-### В коде (web-vitals):
+### In code (web-vitals):
 ```bash
 npm install web-vitals
 ```
@@ -53,36 +53,36 @@ export function WebVitals() {
 
 ---
 
-## Шаг 2: Оптимизация LCP
+## Step 2: Optimize LCP
 
-### Изображения:
+### Images:
 ```tsx
 import Image from 'next/image'
 
-// Hero изображение
+// Hero image
 <Image
   src="/hero.jpg"
   alt="Hero"
   width={1200}
   height={600}
-  priority // Критически важно для LCP!
+  priority // Critical for LCP!
   sizes="100vw"
 />
 ```
 
-### Шрифты:
+### Fonts:
 ```tsx
 // app/layout.tsx
 import { Inter } from 'next/font/google'
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
-  display: 'swap', // Показать текст до загрузки шрифта
+  display: 'swap', // Show text before font loads
   preload: true,
 })
 ```
 
-### Preload критических ресурсов:
+### Preload critical resources:
 ```tsx
 // app/layout.tsx
 export const metadata = {
@@ -97,16 +97,16 @@ export const metadata = {
 
 ---
 
-## Шаг 3: Оптимизация FID
+## Step 3: Optimize FID
 
 ### Code splitting:
 ```tsx
-// Ленивая загрузка тяжёлых компонентов
+// Lazy load heavy components
 import dynamic from 'next/dynamic'
 
 const HeavyComponent = dynamic(() => import('@/components/Heavy'), {
   loading: () => <p>Loading...</p>,
-  ssr: false, // Если не нужен на сервере
+  ssr: false, // If not needed on server
 })
 ```
 
@@ -117,11 +117,11 @@ const HeavyComponent = dynamic(() => import('@/components/Heavy'), {
 
 ---
 
-## Шаг 4: Оптимизация CLS
+## Step 4: Optimize CLS
 
-### Резервируй место для изображений:
+### Reserve space for images:
 ```tsx
-// ВСЕГДА указывай width и height
+// ALWAYS specify width and height
 <Image
   src="/photo.jpg"
   alt="Photo"
@@ -130,9 +130,9 @@ const HeavyComponent = dynamic(() => import('@/components/Heavy'), {
 />
 ```
 
-### Резервируй место для динамического контента:
+### Reserve space for dynamic content:
 ```css
-/* Skeleton для карточек */
+/* Skeleton for cards */
 .skeleton {
   min-height: 200px;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -140,17 +140,17 @@ const HeavyComponent = dynamic(() => import('@/components/Heavy'), {
 }
 ```
 
-### Шрифты без сдвига:
+### Fonts without layout shift:
 ```tsx
 const font = Inter({
   display: 'swap',
-  adjustFontFallback: true, // Минимизирует сдвиг
+  adjustFontFallback: true, // Minimizes layout shift
 })
 ```
 
 ---
 
-## Шаг 5: Next.js оптимизации
+## Step 5: Next.js Optimizations
 
 ### next.config.js:
 ```js
@@ -160,40 +160,40 @@ module.exports = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
   },
   experimental: {
-    optimizeCss: true, // Минификация CSS
+    optimizeCss: true, // CSS minification
   },
   compress: true,
 }
 ```
 
-### Статическая генерация:
+### Static generation:
 ```tsx
-// Используй SSG где возможно
+// Use SSG where possible
 export const dynamic = 'force-static'
-export const revalidate = 3600 // ISR каждый час
+export const revalidate = 3600 // ISR every hour
 ```
 
 ---
 
-## Чеклист оптимизации
+## Optimization Checklist
 
 ### LCP (< 2.5s):
-- [ ] Hero изображение с `priority`
-- [ ] Шрифты с `display: swap`
-- [ ] Preload критических ресурсов
-- [ ] SSG/ISR для статических страниц
+- [ ] Hero image with `priority`
+- [ ] Fonts with `display: swap`
+- [ ] Preload critical resources
+- [ ] SSG/ISR for static pages
 
 ### FID (< 100ms):
-- [ ] Code splitting для тяжёлых компонентов
+- [ ] Code splitting for heavy components
 - [ ] Defer non-critical scripts
-- [ ] Минимизация JS бандла
+- [ ] Minimize JS bundle
 
 ### CLS (< 0.1):
-- [ ] Все изображения с width/height
-- [ ] Skeleton loaders для динамики
-- [ ] Font fallback настроен
+- [ ] All images with width/height
+- [ ] Skeleton loaders for dynamic content
+- [ ] Font fallback configured
 
-### Общее:
-- [ ] AVIF/WebP для изображений
-- [ ] Gzip/Brotli сжатие
-- [ ] CDN для статики (Vercel Edge Network)
+### General:
+- [ ] AVIF/WebP for images
+- [ ] Gzip/Brotli compression
+- [ ] CDN for static assets (Vercel Edge Network)

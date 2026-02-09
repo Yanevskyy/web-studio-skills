@@ -1,102 +1,102 @@
 ---
 name: blog-system
-description: "Скилл для создания production-ready блог-системы. Страницы статей, роутинг, кликабельные карточки, контент-стратегия, светлая навигация. Используй при добавлении блога/журнала на сайт."
+description: "Skill for building a production-ready blog system. Article pages, routing, clickable cards, content strategy, light navigation. Use when adding a blog/journal to a site."
 ---
 
 # Blog System Excellence
 
-## Философия
+## Philosophy
 
-> **Блог — это не набор статей. Это голос бренда, который строит доверие и лояльность.**
+> **A blog is not a collection of articles. It's the brand's voice that builds trust and loyalty.**
 
-Профессиональный блог должен:
-- Выглядеть как продолжение основного сайта
-- Иметь всю функциональность production-системы
-- Легко масштабироваться для новых статей
-- Соответствовать UX-стандартам премиум-сайтов
+A professional blog must:
+- Look like an extension of the main site
+- Have full production-system functionality
+- Scale easily for new articles
+- Meet premium UX standards
 
 ---
 
-## Архитектура блог-системы
+## Blog System Architecture
 
-### Обязательные компоненты
+### Required Components
 
 ```
 src/
 ├── pages/
-│   ├── Blog.tsx         # Список статей (карточки)
-│   └── BlogPost.tsx     # Детальная страница статьи
-├── App.tsx              # Роут /blog/:slug
+│   ├── Blog.tsx         # Article listing (cards)
+│   └── BlogPost.tsx     # Article detail page
+├── App.tsx              # Route /blog/:slug
 └── components/
-    └── Navigation.tsx   # Light mode для статей
+    └── Navigation.tsx   # Light mode for articles
 ```
 
-### Структура данных статьи
+### Article Data Structure
 
 ```typescript
 interface BlogArticle {
-  slug: string;          // URL-friendly идентификатор
-  title: string;         // Заголовок (≤ 12 слов)
-  excerpt: string;       // Краткое описание (≤ 30 слов)
-  image: string;         // Hero изображение
-  date: string;          // Дата публикации
-  category: string;      // Категория для фильтрации
+  slug: string;          // URL-friendly identifier
+  title: string;         // Title (≤ 12 words)
+  excerpt: string;       // Brief description (≤ 30 words)
+  image: string;         // Hero image
+  date: string;          // Publication date
+  category: string;      // Category for filtering
   readTime: string;      // "5 min read"
-  content: string[];     // Массив параграфов
+  content: string[];     // Array of paragraphs
 }
 ```
 
 ---
 
-## Чеклист реализации
+## Implementation Checklist
 
-### Страница списка (Blog.tsx)
+### Listing Page (Blog.tsx)
 
-- [ ] Featured post (главная статья) крупнее остальных
-- [ ] Карточки статей кликабельны полностью
-- [ ] Slug добавлен к каждой статье
-- [ ] Link обёртка с hover-эффектами
-- [ ] Категория и время чтения видны
-- [ ] Кнопка "Read article" на featured post
-- [ ] Newsletter CTA в конце страницы
+- [ ] Featured post (main article) larger than others
+- [ ] Article cards fully clickable
+- [ ] Slug added to each article
+- [ ] Link wrapper with hover effects
+- [ ] Category and read time visible
+- [ ] "Read article" button on featured post
+- [ ] Newsletter CTA at end of page
 
-### Страница статьи (BlogPost.tsx)
+### Article Page (BlogPost.tsx)
 
-- [ ] Hero секция с изображением на 70vh
-- [ ] Dark overlay для контраста с навигацией
-- [ ] Мета-информация (дата, категория, время чтения)
-- [ ] Контент с reveal-анимациями
-- [ ] Кнопка "Back to Journal" (светлая на hero)
-- [ ] CTA подписки после статьи
-- [ ] Scroll to top при загрузке
+- [ ] Hero section with image at 70vh
+- [ ] Dark overlay for navigation contrast
+- [ ] Meta info (date, category, read time)
+- [ ] Content with reveal animations
+- [ ] "Back to Journal" button (light on hero)
+- [ ] Subscription CTA after article
+- [ ] Scroll to top on load
 
-### Навигация (Navigation.tsx)
+### Navigation (Navigation.tsx)
 
-- [ ] Light mode для страниц `/blog/:slug`
-- [ ] Логотип белый на hero
-- [ ] Меню белое на hero
-- [ ] Плавный переход при скролле
+- [ ] Light mode for `/blog/:slug` pages
+- [ ] White logo on hero
+- [ ] White menu on hero
+- [ ] Smooth transition on scroll
 
-### Роутинг (App.tsx)
+### Routing (App.tsx)
 
-- [ ] Импорт BlogPost компонента
+- [ ] BlogPost component imported
 - [ ] Route path="/blog/:slug"
-- [ ] Размещение после /blog
+- [ ] Placed after /blog
 
 ---
 
-## Паттерны реализации
+## Implementation Patterns
 
-### 1. Кликабельные карточки с Link
+### 1. Clickable Cards with Link
 
 ```tsx
-// ❌ Неправильно — только заголовок кликабельный
+// ❌ Wrong — only title is clickable
 <article>
   <img src={post.image} />
   <Link to={`/blog/${post.slug}`}>{post.title}</Link>
 </article>
 
-// ✅ Правильно — вся карточка кликабельная
+// ✅ Correct — entire card is clickable
 <Link to={`/blog/${post.slug}`} className="group">
   <article>
     <img 
@@ -110,7 +110,7 @@ interface BlogArticle {
 </Link>
 ```
 
-### 2. Light Navigation для статей
+### 2. Light Navigation for Articles
 
 ```tsx
 // Navigation.tsx
@@ -123,15 +123,12 @@ const useLightColors = (
 ) && !isScrolled;
 ```
 
-### 3. Dark Overlay для Hero
+### 3. Dark Overlay for Hero
 
 ```tsx
-// BlogPost.tsx — Hero секция
 <section className="min-h-[70vh] relative flex items-end">
   <div className="absolute inset-0">
     <img src={article.image} className="w-full h-full object-cover" />
-    
-    {/* Dark overlay для навигации */}
     <div 
       className="absolute inset-0"
       style={{
@@ -143,21 +140,17 @@ const useLightColors = (
         )`
       }}
     />
-    
-    {/* Bottom gradient to page background */}
     <div className="absolute inset-0 bg-gradient-to-t from-cream via-cream/60 to-transparent" />
   </div>
-  
   <div className="container relative z-10 pb-20 pt-40">
     {/* Content */}
   </div>
 </section>
 ```
 
-### 4. Reveal-анимации для контента
+### 4. Reveal Animations for Content
 
 ```tsx
-// Intersection Observer паттерн
 useEffect(() => {
   const observer = new IntersectionObserver(
     (entries) => {
@@ -170,12 +163,10 @@ useEffect(() => {
     },
     { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
   );
-
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   return () => observer.disconnect();
 }, []);
 
-// Применение с staggered delay
 {article.content.map((paragraph, index) => (
   <p 
     key={index} 
@@ -187,125 +178,62 @@ useEffect(() => {
 ))}
 ```
 
-### 5. Back Button светлый
+---
 
-```tsx
-<Link
-  to="/blog"
-  className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
->
-  <ArrowLeft size={16} /> Back to Journal
-</Link>
-```
+## Content Strategy
+
+### Article Structure
+
+1. **Hook** (first paragraph) — capture attention
+2. **Context** — why it matters
+3. **Story/Content** — main body
+4. **Insight** — key takeaway
+5. **Call to Action** — what to do next
+
+### Content Length
+
+| Type | Words | Read Time |
+|------|-------|-----------|
+| Short | 500-800 | 3-4 min |
+| Medium | 1000-1500 | 5-7 min |
+| Long (flagship) | 2000-3000 | 8-12 min |
+
+### Categories (examples)
+
+- **Our Story** — brand history, founders
+- **Process** — production, behind the scenes
+- **Philosophy** — values, approach
+- **Ingredients** — materials, suppliers
+- **News** — announcements, updates
 
 ---
 
-## Контент-стратегия
+## Anti-Patterns
 
-### Структура статьи
-
-1. **Hook** (первый параграф) — захватить внимание
-2. **Context** — почему это важно
-3. **Story/Content** — основное содержание
-4. **Insight** — ключевой вывод
-5. **Call to Action** — что делать дальше
-
-### Длина контента
-
-| Тип | Слов | Время чтения |
-|-----|------|--------------|
-| Короткая | 500-800 | 3-4 min |
-| Средняя | 1000-1500 | 5-7 min |
-| Длинная (flagship) | 2000-3000 | 8-12 min |
-
-### Категории (примеры)
-
-- **Our Story** — история бренда, основатели
-- **Process** — производство, закулисье
-- **Philosophy** — ценности, подход
-- **Ingredients** — материалы, поставщики
-- **News** — новости, анонсы
+| Anti-pattern | Why it's bad | Alternative |
+|--------------|-------------|-------------|
+| **Cards without Link** | Not clickable | Wrap in Link |
+| **Only title as link** | Poor UX | Entire card clickable |
+| **Dark text on dark photo** | Unreadable | Dark overlay |
+| **Standard nav on hero** | Blends in | Light mode |
+| **Article without CTA** | Lost conversion | Newsletter, related posts |
+| **Too many categories** | Confusing | 4-6 categories max |
+| **Dates in ISO format** | Not human-readable | "January 2024" |
 
 ---
 
-## Anti-Patterns ❌
+## Blog SEO
 
-| Anti-pattern | Почему плохо | Альтернатива |
-|--------------|--------------|--------------|
-| **Карточки без Link** | Не кликабельны | Обернуть в Link |
-| **Только заголовок-ссылка** | Плохой UX | Вся карточка кликабельная |
-| **Тёмный текст на тёмном фото** | Нечитаемо | Dark overlay |
-| **Стандартная навигация на hero** | Сливается | Light mode |
-| **Статья без CTA** | Потеря конверсии | Newsletter, related posts |
-| **Слишком много категорий** | Путаница | 4-6 категорий максимум |
-| **Даты в формате ISO** | Не читаемо | "January 2024" |
-
----
-
-## SEO для блога
-
-- [ ] Уникальный `<title>` для каждой статьи
-- [ ] `<meta description>` из excerpt
-- [ ] Open Graph теги
+- [ ] Unique `<title>` for each article
+- [ ] `<meta description>` from excerpt
+- [ ] Open Graph tags
 - [ ] Semantic HTML (`<article>`, `<time>`)
-- [ ] Alt-текст для изображений
+- [ ] Alt text for images
 - [ ] Structured data (Article schema)
 
 ---
 
-## Тестирование
-
-### Функциональное
-
-1. Открыть `/blog` — карточки кликабельны?
-2. Кликнуть на статью — открывается `/blog/:slug`?
-3. Навигация белая на hero?
-4. "Back to Journal" работает?
-5. Scroll to top при переходе?
-
-### Визуальное
-
-1. Контраст текста на hero достаточный?
-2. Hover-эффекты на карточках?
-3. Мобильная версия адаптивна?
-4. Анимации плавные?
-
----
-
-## Добавление новой статьи
-
-```typescript
-// Добавить в массив articles в BlogPost.tsx
-{
-  slug: 'new-article-slug',           // URL-friendly
-  title: 'Article Title Here',        // ≤ 12 слов
-  excerpt: 'Brief description...',    // ≤ 30 слов
-  image: '/images/article-image.webp',
-  date: 'February 2024',
-  category: 'Category',
-  readTime: '5 min read',
-  content: [
-    "First paragraph...",
-    "Second paragraph...",
-    // ...
-  ]
-}
-
-// Добавить карточку в Blog.tsx (если не из shared data)
-{
-  slug: 'new-article-slug',
-  title: 'Article Title Here',
-  excerpt: 'Brief description...',
-  image: '/images/article-image.webp',
-  date: 'February 2024',
-  category: 'Category',
-  readTime: '5 min read',
-}
-```
-
----
-
-## Шаблон аудита блога
+## Blog Audit Template
 
 ```markdown
 ## Blog Audit for [Project Name]

@@ -1,31 +1,31 @@
 ---
 name: email-integration
-description: "Используй для настройки email: контактные формы, транзакционные письма, уведомления. EmailJS, Resend, React Email."
+description: "Use when setting up email: contact forms, transactional emails, notifications. EmailJS, Resend, React Email."
 ---
 
-# Email Integration для Next.js
+# Email Integration for Next.js
 
-## Когда использовать
+## When to use
 
-**ПРИ ДОБАВЛЕНИИ ФОРМ** или **ТРАНЗАКЦИОННЫХ ПИСЕМ** (подтверждение заказа, сброс пароля).
+**WHEN ADDING FORMS** or **TRANSACTIONAL EMAILS** (order confirmation, password reset).
 
 ---
 
-## Вариант 1: EmailJS (для контактных форм)
+## Option 1: EmailJS (for contact forms)
 
-**Плюсы:** Работает без бэкенда, бесплатно 200 писем/месяц.
+**Pros:** Works without backend, free 200 emails/month.
 
-### Установка:
+### Installation:
 ```bash
 npm install @emailjs/browser
 ```
 
-### Настройка:
-1. Зарегистрируйся на [emailjs.com](https://www.emailjs.com)
-2. Добавь Email Service (Gmail/Outlook)
-3. Создай Email Template с переменными: `{{user_name}}`, `{{user_email}}`, `{{message}}`
+### Setup:
+1. Sign up at [emailjs.com](https://www.emailjs.com)
+2. Add Email Service (Gmail/Outlook)
+3. Create Email Template with variables: `{{user_name}}`, `{{user_email}}`, `{{message}}`
 
-### Код:
+### Code:
 ```tsx
 'use client'
 
@@ -46,19 +46,19 @@ export function ContactForm() {
         formRef.current!,
         'YOUR_PUBLIC_KEY'
       )
-      toast.success('Сообщение отправлено!')
+      toast.success('Message sent!')
       formRef.current?.reset()
     } catch (error) {
-      toast.error('Ошибка отправки')
+      toast.error('Failed to send')
     }
   }
 
   return (
     <form ref={formRef} onSubmit={handleSubmit}>
-      <input name="user_name" placeholder="Имя" required />
+      <input name="user_name" placeholder="Name" required />
       <input name="user_email" type="email" placeholder="Email" required />
-      <textarea name="message" placeholder="Сообщение" required />
-      <button type="submit">Отправить</button>
+      <textarea name="message" placeholder="Message" required />
+      <button type="submit">Send</button>
     </form>
   )
 }
@@ -66,11 +66,11 @@ export function ContactForm() {
 
 ---
 
-## Вариант 2: Resend (для транзакционных писем)
+## Option 2: Resend (for transactional emails)
 
-**Плюсы:** Современный API, React Email, 3000 писем/месяц бесплатно.
+**Pros:** Modern API, React Email, 3000 emails/month free.
 
-### Установка:
+### Installation:
 ```bash
 npm install resend @react-email/components
 ```
@@ -80,7 +80,7 @@ npm install resend @react-email/components
 RESEND_API_KEY=re_xxx
 ```
 
-### Email шаблон (React Email):
+### Email template (React Email):
 ```tsx
 // emails/OrderConfirmation.tsx
 import {
@@ -109,16 +109,16 @@ export function OrderConfirmation({
       <Head />
       <Body style={{ fontFamily: 'sans-serif' }}>
         <Container>
-          <Heading>Спасибо за заказ!</Heading>
-          <Text>Привет, {customerName}!</Text>
+          <Heading>Thank you for your order!</Heading>
+          <Text>Hi, {customerName}!</Text>
           <Text>
-            Ваш заказ #{orderNumber} на сумму {total} успешно оформлен.
+            Your order #{orderNumber} for {total} has been confirmed.
           </Text>
           <Button
             href="https://example.com/orders"
             style={{ background: '#000', color: '#fff', padding: '12px 24px' }}
           >
-            Посмотреть заказ
+            View Order
           </Button>
         </Container>
       </Body>
@@ -127,7 +127,7 @@ export function OrderConfirmation({
 }
 ```
 
-### Отправка:
+### Sending:
 ```ts
 // app/api/send-email/route.ts
 import { Resend } from 'resend'
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
   await resend.emails.send({
     from: 'Shop <orders@example.com>',
     to: email,
-    subject: `Заказ #${orderNumber} подтверждён`,
+    subject: `Order #${orderNumber} confirmed`,
     react: OrderConfirmation({
       customerName: name,
       orderNumber,
@@ -155,7 +155,7 @@ export async function POST(req: Request) {
 
 ---
 
-## Вариант 3: Nodemailer (полный контроль)
+## Option 3: Nodemailer (full control)
 
 ```ts
 // lib/email.ts
@@ -166,7 +166,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS, // App Password для Gmail
+    pass: process.env.SMTP_PASS, // App Password for Gmail
   },
 })
 
@@ -190,21 +190,21 @@ export async function sendEmail({
 
 ---
 
-## Какой вариант выбрать?
+## Which option to choose?
 
-| Сценарий | Рекомендация |
-|----------|--------------|
-| Контактная форма | EmailJS |
-| Транзакционные письма | Resend |
-| Полный контроль / свой SMTP | Nodemailer |
+| Scenario | Recommendation |
+|----------|---------------|
+| Contact form | EmailJS |
+| Transactional emails | Resend |
+| Full control / own SMTP | Nodemailer |
 
 ---
 
-## Чеклист
+## Checklist
 
-- [ ] Выбран сервис (EmailJS/Resend/Nodemailer)
-- [ ] API ключи в env
-- [ ] Шаблоны писем созданы
-- [ ] Форма работает и отправляет
-- [ ] Письма приходят (проверь спам!)
-- [ ] Валидация на клиенте и сервере
+- [ ] Service chosen (EmailJS/Resend/Nodemailer)
+- [ ] API keys in env
+- [ ] Email templates created
+- [ ] Form works and sends
+- [ ] Emails arrive (check spam!)
+- [ ] Validation on client and server

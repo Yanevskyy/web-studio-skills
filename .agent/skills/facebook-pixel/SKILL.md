@@ -1,32 +1,32 @@
 ---
 name: facebook-pixel
-description: "Используй при настройке рекламы Facebook/Instagram. Meta Pixel, события, аудитории ретаргетинга для Next.js."
+description: "Use when setting up Facebook/Instagram ads. Meta Pixel, events, retargeting audiences for Next.js."
 ---
 
-# Facebook Pixel для Next.js
+# Facebook Pixel for Next.js
 
-## Когда использовать
+## When to use
 
-**ПРИ ЗАПУСКЕ РЕКЛАМЫ** в Facebook/Instagram.
+**WHEN LAUNCHING ADS** on Facebook/Instagram.
 
 ---
 
-## Шаг 1: Создание Pixel
+## Step 1: Create Pixel
 
 1. [Meta Events Manager](https://business.facebook.com/events_manager)
 2. Connect Data Sources → Web → Meta Pixel
-3. Скопируй Pixel ID
+3. Copy Pixel ID
 
 ---
 
-## Шаг 2: Установка
+## Step 2: Installation
 
 ### Environment:
 ```env
 NEXT_PUBLIC_FACEBOOK_PIXEL_ID=123456789
 ```
 
-### Компонент:
+### Component:
 ```tsx
 // components/FacebookPixel.tsx
 'use client'
@@ -88,7 +88,7 @@ export function FacebookPixel() {
 }
 ```
 
-### В layout:
+### In layout:
 ```tsx
 // app/layout.tsx
 import { FacebookPixel } from '@/components/FacebookPixel'
@@ -107,9 +107,9 @@ export default function RootLayout({ children }) {
 
 ---
 
-## Шаг 3: Отслеживание событий
+## Step 3: Event Tracking
 
-### Функция отправки:
+### Helper function:
 ```tsx
 // lib/facebook.ts
 export function trackFBEvent(eventName: string, params?: Record<string, any>) {
@@ -118,7 +118,6 @@ export function trackFBEvent(eventName: string, params?: Record<string, any>) {
   }
 }
 
-// Custom events
 export function trackFBCustomEvent(eventName: string, params?: Record<string, any>) {
   if (typeof window.fbq === 'function') {
     window.fbq('trackCustom', eventName, params)
@@ -126,9 +125,9 @@ export function trackFBCustomEvent(eventName: string, params?: Record<string, an
 }
 ```
 
-### Стандартные события:
+### Standard events:
 ```tsx
-// Просмотр контента
+// View content
 trackFBEvent('ViewContent', {
   content_name: 'Product Name',
   content_category: 'Category',
@@ -138,7 +137,7 @@ trackFBEvent('ViewContent', {
   currency: 'EUR',
 })
 
-// Добавление в корзину
+// Add to cart
 trackFBEvent('AddToCart', {
   content_ids: ['SKU123'],
   content_type: 'product',
@@ -146,7 +145,7 @@ trackFBEvent('AddToCart', {
   currency: 'EUR',
 })
 
-// Начало оформления
+// Initiate checkout
 trackFBEvent('InitiateCheckout', {
   content_ids: ['SKU123', 'SKU456'],
   num_items: 2,
@@ -154,7 +153,7 @@ trackFBEvent('InitiateCheckout', {
   currency: 'EUR',
 })
 
-// Покупка
+// Purchase
 trackFBEvent('Purchase', {
   content_ids: ['SKU123'],
   content_type: 'product',
@@ -162,7 +161,7 @@ trackFBEvent('Purchase', {
   currency: 'EUR',
 })
 
-// Лид (контактная форма)
+// Lead (contact form)
 trackFBEvent('Lead', {
   content_name: 'Contact Form',
 })
@@ -170,17 +169,17 @@ trackFBEvent('Lead', {
 
 ---
 
-## Шаг 4: Тестирование
+## Step 4: Testing
 
 1. [Meta Pixel Helper](https://chrome.google.com/webstore/detail/meta-pixel-helper) — Chrome extension
 2. Events Manager → Test Events → Open Website
-3. Проверь, что события приходят
+3. Verify events are received
 
 ---
 
-## Шаг 5: Conversions API (серверные события)
+## Step 5: Conversions API (server-side events)
 
-Для более точного отслеживания (обход блокировщиков):
+For more accurate tracking (bypasses ad blockers):
 
 ```ts
 // app/api/fb-event/route.ts
@@ -217,12 +216,12 @@ export async function POST(req: Request) {
 
 ---
 
-## Чеклист
+## Checklist
 
-- [ ] Pixel создан в Events Manager
-- [ ] Pixel ID в env
-- [ ] Код Pixel добавлен на сайт
-- [ ] PageView отслеживается
-- [ ] E-commerce события настроены
-- [ ] Тестирование через Pixel Helper
-- [ ] (Опционально) Conversions API
+- [ ] Pixel created in Events Manager
+- [ ] Pixel ID in env
+- [ ] Pixel code added to site
+- [ ] PageView tracked
+- [ ] E-commerce events configured
+- [ ] Tested with Pixel Helper
+- [ ] (Optional) Conversions API

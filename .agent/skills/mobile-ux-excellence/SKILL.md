@@ -1,49 +1,48 @@
 ---
 name: mobile-ux-excellence
-description: "Используй для проверки мобильного дизайна. Анти-шаблоны, UX удобство, микро-анимации, wow-эффекты. Гарантирует, что мобильная версия выглядит круто."
+description: "Use when reviewing mobile design. Anti-patterns, UX quality, micro-animations, wow-effects. Ensures the mobile version looks great."
 ---
 
 # Mobile UX Excellence
 
-## Когда использовать
+## When to use
 
-**ПЕРЕД ДЕПЛОЕМ** — проверь, что мобильная версия не скучная и действительно впечатляет.
-
----
-
-## ❌ Анти-шаблоны (НЕ делай так)
-
-### Навигация
-- ❌ Стандартный бургер-меню без анимации
-- ❌ Меню открывается резко, без transition
-- ❌ Мелкие tap-таргеты (< 44px)
-- ❌ Навигация занимает весь экран банально
-
-### Карточки
-- ❌ Одинаковые прямоугольные карточки в ряд
-- ❌ Нет hover/tap состояний
-- ❌ Статичные изображения без эффектов
-- ❌ Скучные тени (shadow-md везде)
-
-### Типографика
-- ❌ Одинаковый размер текста везде
-- ❌ Нет визуальной иерархии
-- ❌ Заголовки без характера
-
-### Общее
-- ❌ Белый фон везде без акцентов
-- ❌ Нет микро-анимаций
-- ❌ Загрузка без skeleton/placeholder
-- ❌ Кнопки выглядят как из Bootstrap
+**BEFORE DEPLOY** — verify the mobile version isn't boring and truly impresses.
 
 ---
 
-## ✅ Wow-паттерны
+## Anti-Patterns (DON'T do this)
 
-### 1. Навигация с характером
+### Navigation
+- Standard burger menu without animation
+- Menu opens abruptly, no transition
+- Small tap targets (< 44px)
+- Menu takes full screen without style
+
+### Cards
+- Identical rectangular cards in a row
+- No hover/tap states
+- Static images without effects
+- Boring shadows (shadow-md everywhere)
+
+### Typography
+- Same text size everywhere
+- No visual hierarchy
+- Headings without character
+
+### General
+- White background everywhere without accents
+- No micro-animations
+- Loading without skeleton/placeholder
+- Buttons that look like Bootstrap defaults
+
+---
+
+## Wow Patterns
+
+### 1. Navigation with Character
 
 ```tsx
-// Animated mobile menu
 const [isOpen, setIsOpen] = useState(false)
 
 <button 
@@ -86,10 +85,9 @@ const [isOpen, setIsOpen] = useState(false)
 </nav>
 ```
 
-### 2. Карточки с глубиной
+### 2. Cards with Depth
 
 ```tsx
-// Card with hover lift and glow
 <div className="
   group relative
   bg-white rounded-2xl p-6
@@ -97,7 +95,6 @@ const [isOpen, setIsOpen] = useState(false)
   hover:translate-y-[-4px]
   hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]
 ">
-  {/* Subtle gradient border on hover */}
   <div className="
     absolute inset-0 rounded-2xl opacity-0
     bg-gradient-to-r from-primary/20 to-secondary/20
@@ -105,16 +102,13 @@ const [isOpen, setIsOpen] = useState(false)
     group-hover:opacity-100
     -z-10 blur-xl
   " />
-  
-  {/* Content */}
   <h3 className="text-xl font-semibold">{title}</h3>
 </div>
 ```
 
-### 3. Изображения с эффектом
+### 3. Parallax Images (framer-motion)
 
 ```tsx
-// Image with subtle zoom on scroll (using framer-motion)
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 function ParallaxImage({ src, alt }) {
@@ -127,194 +121,110 @@ function ParallaxImage({ src, alt }) {
 
   return (
     <div ref={ref} className="overflow-hidden rounded-2xl">
-      <motion.img
-        src={src}
-        alt={alt}
-        style={{ scale }}
-        className="w-full h-full object-cover"
-      />
+      <motion.img src={src} alt={alt} style={{ scale }}
+        className="w-full h-full object-cover" />
     </div>
   )
 }
 ```
 
-### 4. Кнопки с жизнью
+### 4. Buttons with Life
 
 ```tsx
-// Button with ripple effect
 <button className="
   relative overflow-hidden
   bg-primary text-white
-  px-8 py-4 rounded-full
-  font-semibold
+  px-8 py-4 rounded-full font-semibold
   transition-all duration-300
   active:scale-95
   hover:shadow-lg hover:shadow-primary/30
 ">
-  <span className="relative z-10">Заказать</span>
-  {/* Shine effect */}
+  <span className="relative z-10">Order Now</span>
   <div className="
     absolute inset-0 -translate-x-full
     bg-gradient-to-r from-transparent via-white/20 to-transparent
     group-hover:animate-shine
   " />
 </button>
-
-// In tailwind.config.js
-animation: {
-  shine: 'shine 1.5s ease-in-out infinite',
-},
-keyframes: {
-  shine: {
-    '100%': { transform: 'translateX(100%)' },
-  },
-},
 ```
 
-### 5. Skeleton loaders
+### 5. Skeleton Loaders
 
 ```tsx
-// Shimmer skeleton
 <div className="animate-pulse">
   <div className="h-48 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 
     bg-[length:200%_100%] animate-shimmer rounded-xl" />
 </div>
-
-// In tailwind.config.js
-animation: {
-  shimmer: 'shimmer 1.5s infinite',
-},
-keyframes: {
-  shimmer: {
-    '0%': { backgroundPosition: '-200% 0' },
-    '100%': { backgroundPosition: '200% 0' },
-  },
-},
-```
-
-### 6. Scroll-triggered animations
-
-```tsx
-// Fade up on scroll (CSS only)
-.fade-up {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.6s ease-out;
-}
-
-.fade-up.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-// With Intersection Observer
-useEffect(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible')
-        }
-      })
-    },
-    { threshold: 0.1 }
-  )
-  
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el))
-}, [])
 ```
 
 ---
 
-## 📐 Mobile UX правила
+## Mobile UX Rules
 
-### Thumb Zone (зона большого пальца)
+### Thumb Zone
 
 ```
-┌─────────────────────┐
-│   ⚠️ Hard to reach  │  <- Важные действия НЕ здесь
-├─────────────────────┤
-│   ✅ Easy reach     │  <- Основной контент
-├─────────────────────┤
-│   ✅ Natural zone   │  <- CTA кнопки, навигация
-└─────────────────────┘
++---------------------+
+|  Hard to reach      |  <- DON'T put key actions here
++---------------------+
+|  Easy reach         |  <- Main content
++---------------------+
+|  Natural zone       |  <- CTA buttons, navigation
++---------------------+
 ```
 
-### Размеры элементов
-- **Tap targets:** минимум 44×44px
-- **Spacing между кнопками:** минимум 8px
-- **Текст:** минимум 16px (никогда меньше 14px)
-
-### Жесты
-- **Swipe to dismiss** для модалов
-- **Pull to refresh** где уместно
-- **Long press** для контекстных действий
+### Element Sizes
+- **Tap targets:** minimum 44x44px
+- **Spacing between buttons:** minimum 8px
+- **Text:** minimum 16px (never below 14px)
 
 ---
 
-## 🎨 Визуальные приёмы
+## Visual Techniques
 
-### Градиенты вместо плоских цветов
+### Gradients instead of flat colors
 ```tsx
-// Subtle gradient background
 <div className="bg-gradient-to-b from-white via-gray-50 to-gray-100" />
 
 // Gradient text
-<h1 className="
-  bg-gradient-to-r from-primary to-secondary
-  bg-clip-text text-transparent
-">
-  Заголовок
+<h1 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+  Headline
 </h1>
 ```
 
-### Glassmorphism (для iOS-feel)
+### Glassmorphism (iOS feel)
 ```tsx
-<div className="
-  bg-white/70 backdrop-blur-lg
-  border border-white/20
-  rounded-2xl shadow-lg
-">
+<div className="bg-white/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg">
   {/* Content */}
 </div>
 ```
 
-### Soft shadows
+### Soft Shadows
 ```tsx
-// Вместо shadow-md используй кастомные мягкие тени
+// Instead of shadow-md use custom soft shadows
 <div className="shadow-[0_8px_30px_rgba(0,0,0,0.08)]" />
 ```
 
 ---
 
-## ✅ Чеклист "Это круто?"
+## "Is This Cool?" Checklist
 
-### Первое впечатление
-- [ ] Первый экран вызывает "вау" (не просто текст + картинка)
-- [ ] Есть движение (анимации появления, параллакс)
-- [ ] Цвета не скучные (не просто #fff + #000)
+### First Impression
+- [ ] First screen triggers "wow" (not just text + image)
+- [ ] There's motion (entrance animations, parallax)
+- [ ] Colors aren't boring (not just #fff + #000)
 
-### Интерактивность
-- [ ] Все кнопки реагируют на touch (scale, ripple, color change)
-- [ ] Меню анимировано, не резкое
-- [ ] Формы приятно заполнять (автофокус, валидация inline)
+### Interactivity
+- [ ] All buttons respond to touch (scale, ripple, color change)
+- [ ] Menu is animated, not abrupt
+- [ ] Forms are pleasant to fill (autofocus, inline validation)
 
-### Детали
-- [ ] Skeleton loaders при загрузке
-- [ ] Иконки анимированы или с характером
-- [ ] Нет стандартных системных элементов (select, checkbox)
+### Details
+- [ ] Skeleton loaders during loading
+- [ ] Icons animated or with character
+- [ ] No default system elements (select, checkbox)
 
-### Общее ощущение
-- [ ] Хочется скроллить и изучать
-- [ ] Чувствуется "полировка"
-- [ ] Сайт не похож на шаблон
-
----
-
-## Финальный вопрос
-
-Перед деплоем спроси себя:
-
-> **"Если бы я увидел этот мобильный сайт впервые — я бы сказал 'круто' или 'ну ок'?"**
-
-Если "ну ок" — возвращайся и добавляй wow-элементы.
+### Overall Feel
+- [ ] Makes you want to scroll and explore
+- [ ] Feels "polished"
+- [ ] Site doesn't look like a template

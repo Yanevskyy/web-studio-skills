@@ -1,17 +1,17 @@
 ---
 name: stripe-integration
-description: "Используй при добавлении платежей в интернет-магазин. Stripe Checkout, вебхуки, обработка заказов для Next.js."
+description: "Use when adding payments to an e-commerce store. Stripe Checkout, webhooks, order processing for Next.js."
 ---
 
-# Stripe Integration для Next.js
+# Stripe Integration for Next.js
 
-## Когда использовать
+## When to use
 
-**ПРИ ДОБАВЛЕНИИ ПЛАТЕЖЕЙ** в любой e-commerce проект.
+**WHEN ADDING PAYMENTS** to any e-commerce project.
 
 ---
 
-## Шаг 1: Установка
+## Step 1: Installation
 
 ```bash
 npm install stripe @stripe/stripe-js
@@ -19,7 +19,7 @@ npm install stripe @stripe/stripe-js
 
 ---
 
-## Шаг 2: Environment Variables
+## Step 2: Environment Variables
 
 ```env
 # .env.local
@@ -30,9 +30,9 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 ---
 
-## Шаг 3: Stripe Checkout (рекомендуется)
+## Step 3: Stripe Checkout (recommended)
 
-### API Route для создания сессии:
+### API Route for creating a session:
 
 ```ts
 // app/api/checkout/route.ts
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
           name: item.name,
           images: [item.image],
         },
-        unit_amount: item.price * 100, // в центах
+        unit_amount: item.price * 100, // in cents
       },
       quantity: item.quantity,
     })),
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cart`,
     metadata: {
-      orderId: 'order_123', // для связи с БД
+      orderId: 'order_123', // to link with DB
     },
   })
 
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 }
 ```
 
-### Клиентский код:
+### Client-side code:
 
 ```tsx
 // components/CheckoutButton.tsx
@@ -93,7 +93,7 @@ export function CheckoutButton({ items }: { items: CartItem[] }) {
 
   return (
     <button onClick={handleCheckout}>
-      Оплатить
+      Pay Now
     </button>
   )
 }
@@ -101,7 +101,7 @@ export function CheckoutButton({ items }: { items: CartItem[] }) {
 
 ---
 
-## Шаг 4: Webhook для обработки платежей
+## Step 4: Webhook for Payment Processing
 
 ```ts
 // app/api/webhook/route.ts
@@ -129,14 +129,14 @@ export async function POST(req: Request) {
   switch (event.type) {
     case 'checkout.session.completed':
       const session = event.data.object as Stripe.Checkout.Session
-      // Обновить заказ в БД
+      // Update order in DB
       await updateOrderStatus(session.metadata?.orderId, 'paid')
-      // Отправить email
+      // Send email
       await sendOrderConfirmation(session.customer_email!)
       break
       
     case 'payment_intent.payment_failed':
-      // Обработать неудачный платёж
+      // Handle failed payment
       break
   }
 
@@ -146,29 +146,29 @@ export async function POST(req: Request) {
 
 ---
 
-## Шаг 5: Тестирование
+## Step 5: Testing
 
-### Тестовые карты:
-| Карта | Результат |
-|-------|-----------|
-| `4242 4242 4242 4242` | Успешный платёж |
-| `4000 0000 0000 0002` | Отклонено |
-| `4000 0025 0000 3155` | Требует 3D Secure |
+### Test cards:
+| Card | Result |
+|------|--------|
+| `4242 4242 4242 4242` | Successful payment |
+| `4000 0000 0000 0002` | Declined |
+| `4000 0025 0000 3155` | Requires 3D Secure |
 
-### Локальный webhook:
+### Local webhook:
 ```bash
 stripe listen --forward-to localhost:3000/api/webhook
 ```
 
 ---
 
-## Чеклист интеграции
+## Integration Checklist
 
-- [ ] Stripe аккаунт создан
-- [ ] API ключи в env
-- [ ] Checkout сессия создаётся
-- [ ] Редирект на success/cancel работает
-- [ ] Webhook настроен и тестирован
-- [ ] Заказы сохраняются в БД
-- [ ] Email уведомления отправляются
-- [ ] Production ключи перед запуском
+- [ ] Stripe account created
+- [ ] API keys in env
+- [ ] Checkout session creates
+- [ ] Redirect to success/cancel works
+- [ ] Webhook configured and tested
+- [ ] Orders saved to DB
+- [ ] Email notifications sent
+- [ ] Production keys before launch

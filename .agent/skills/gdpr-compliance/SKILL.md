@@ -1,83 +1,83 @@
 ---
 name: gdpr-compliance
-description: "Чеклист GDPR/CCPA для сайтов в ЕС. Обязательные страницы, Cookie Banner, согласия. Используй перед деплоем в production."
+description: "GDPR/CCPA checklist for EU websites. Required pages, Cookie Banner, consent. Use before deploying to production."
 ---
 
 # GDPR Compliance
 
-## Назначение
+## Purpose
 
-Этот скилл гарантирует соответствие сайта законам о защите персональных данных (GDPR, CCPA, ePrivacy Directive).
-
----
-
-## Обязательные страницы
-
-### 1. Privacy Policy (Политика конфиденциальности)
-
-**Путь:** `/privacy`
-
-**Должна содержать:**
-- [ ] Кто собирает данные (название компании, контакты)
-- [ ] Какие данные собираются
-- [ ] Цели сбора данных
-- [ ] Правовое основание обработки
-- [ ] Срок хранения данных
-- [ ] Права пользователя (доступ, удаление, исправление)
-- [ ] Информация о передаче данных третьим лицам
-- [ ] Контакт DPO (Data Protection Officer) если применимо
-- [ ] Дата последнего обновления
+This skill ensures the website complies with data protection laws (GDPR, CCPA, ePrivacy Directive).
 
 ---
 
-### 2. Cookie Policy (Политика cookies)
+## Required Pages
 
-**Путь:** `/cookie`
+### 1. Privacy Policy
 
-**Должна содержать:**
-- [ ] Что такое cookies
-- [ ] Типы используемых cookies:
-  - Необходимые (essential)
-  - Функциональные
-  - Аналитические (Google Analytics)
-  - Рекламные (Facebook Pixel)
-- [ ] Как управлять cookies
-- [ ] Ссылки на политики третьих сторон
-- [ ] Дата последнего обновления
+**Path:** `/privacy`
+
+**Must contain:**
+- [ ] Who collects data (company name, contacts)
+- [ ] What data is collected
+- [ ] Purpose of data collection
+- [ ] Legal basis for processing
+- [ ] Data retention period
+- [ ] User rights (access, deletion, correction)
+- [ ] Third-party data sharing information
+- [ ] DPO (Data Protection Officer) contact if applicable
+- [ ] Date of last update
 
 ---
 
-### 3. Terms of Service (Условия использования)
+### 2. Cookie Policy
 
-**Путь:** `/terms`
+**Path:** `/cookie`
 
-**Должна содержать:**
-- [ ] Описание услуг
-- [ ] Правила использования
-- [ ] Ограничение ответственности
-- [ ] Интеллектуальная собственность
-- [ ] Применимое право (обычно Ireland/EU)
-- [ ] Порядок разрешения споров
-- [ ] Контактная информация
+**Must contain:**
+- [ ] What cookies are
+- [ ] Types of cookies used:
+  - Essential (necessary)
+  - Functional
+  - Analytics (Google Analytics)
+  - Advertising (Facebook Pixel)
+- [ ] How to manage cookies
+- [ ] Links to third-party policies
+- [ ] Date of last update
+
+---
+
+### 3. Terms of Service
+
+**Path:** `/terms`
+
+**Must contain:**
+- [ ] Description of services
+- [ ] Usage rules
+- [ ] Limitation of liability
+- [ ] Intellectual property
+- [ ] Applicable law (usually Ireland/EU)
+- [ ] Dispute resolution procedure
+- [ ] Contact information
 
 ---
 
 ## Cookie Consent Banner
 
-### Требования
+### Requirements
 
-Баннер должен появляться при первом посещении и:
+Banner must appear on first visit and:
 
-- [ ] Блокировать non-essential cookies до получения согласия
-- [ ] Предоставлять выбор (Accept All / Reject All / Customize)
-- [ ] Не использовать тёмные паттерны (кнопка "Reject" должна быть видимой)
-- [ ] Сохранять выбор пользователя
-- [ ] Позволять изменить выбор позже
+- [ ] Block non-essential cookies until consent is given
+- [ ] Provide choice (Accept All / Reject All / Customize)
+- [ ] Not use dark patterns ("Reject" button must be visible)
+- [ ] Save user's choice
+- [ ] Allow changing choice later
 
-### Рекомендуемые решения
+### Recommended solution
 
 ```jsx
-// Для React/Next.js
+// For React/Next.js
 // npm install react-cookie-consent
 
 import CookieConsent from 'react-cookie-consent';
@@ -104,17 +104,17 @@ import CookieConsent from 'react-cookie-consent';
 
 ## Google Analytics Consent Mode
 
-При использовании GA4 обязательно настрой Consent Mode:
+When using GA4, Consent Mode is required:
 
 ```jsx
-// В GTM или напрямую
+// In GTM or directly
 gtag('consent', 'default', {
   'analytics_storage': 'denied',
   'ad_storage': 'denied',
   'wait_for_update': 500
 });
 
-// После согласия пользователя
+// After user consent
 gtag('consent', 'update', {
   'analytics_storage': 'granted'
 });
@@ -122,13 +122,13 @@ gtag('consent', 'update', {
 
 ---
 
-## Footer требования
+## Footer Requirements
 
-В футере должны быть ссылки на:
+Footer must include links to:
 
 ```jsx
 <footer>
-  // ... other content ...
+  {/* ... other content ... */}
   <div className="legal-links">
     <Link to="/privacy">Privacy Policy</Link>
     <Link to="/cookie">Cookie Policy</Link>
@@ -139,16 +139,16 @@ gtag('consent', 'update', {
 
 ---
 
-## Мобильная версия Footer
+## Mobile Footer
 
-Footer на мобильных устройствах:
+Footer on mobile devices:
 
-- [ ] Должен использовать 2+ колонки (не одна длинная)
-- [ ] Legal ссылки могут быть inline (flex row)
-- [ ] Уменьшенные отступы на мобильном
-- [ ] Логотип меньше на мобильном
+- [ ] Should use 2+ columns (not one long column)
+- [ ] Legal links can be inline (flex row)
+- [ ] Reduced padding on mobile
+- [ ] Smaller logo on mobile
 
-**Пример:**
+**Example:**
 ```jsx
 // Mobile: 2 columns, Legal links inline
 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -174,37 +174,17 @@ Footer на мобильных устройствах:
 
 ---
 
-## Чеклист перед запуском
+## Studio Credit (Clarity Web)
 
-### Страницы
-- [ ] Privacy Policy создана и содержит все пункты
-- [ ] Cookie Policy создана и содержит все пункты  
-- [ ] Terms of Service создана и содержит все пункты
-- [ ] Все страницы доступны из Footer
-- [ ] Footer оптимизирован для мобильных
+- [ ] Add "Made by Clarity Web" to the bottom of the footer
+- [ ] Link to https://clarityweb.ie
+- [ ] Style: subtle, smaller font size, muted color
 
-### Cookie Banner
-- [ ] Баннер появляется при первом посещении
-- [ ] Есть кнопки Accept / Reject / Customize
-- [ ] Non-essential cookies блокируются до согласия
-- [ ] Выбор сохраняется в localStorage/cookie
-- [ ] GA4 использует Consent Mode
-
-### Контактная форма
-- [ ] Чекбокс согласия с Privacy Policy
-- [ ] Ссылка на Privacy Policy рядом с чекбоксом
-
-### Studio Credit (Clarity Web)
-- [ ] В нижней части footer добавлена надпись "Made by Clarity Web"
-- [ ] Ссылка ведёт на https://clarityweb.ie
-- [ ] Стиль: неброский, меньший размер шрифта, приглушённый цвет
-
-**Пример кода:**
 ```jsx
 {/* Bottom Bar */}
 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
   <p className="text-xs text-soft-grey">
-    © {currentYear} ClientName. All rights reserved.
+    &copy; {currentYear} ClientName. All rights reserved.
   </p>
   <div className="flex items-center gap-6">
     {/* Other links */}
@@ -223,9 +203,31 @@ Footer на мобильных устройствах:
 
 ---
 
-## Штрафы за несоблюдение
+## Pre-Launch Checklist
+
+### Pages
+- [ ] Privacy Policy created with all required items
+- [ ] Cookie Policy created with all required items
+- [ ] Terms of Service created with all required items
+- [ ] All pages accessible from Footer
+- [ ] Footer optimized for mobile
+
+### Cookie Banner
+- [ ] Banner appears on first visit
+- [ ] Accept / Reject / Customize buttons present
+- [ ] Non-essential cookies blocked until consent
+- [ ] Choice saved in localStorage/cookie
+- [ ] GA4 uses Consent Mode
+
+### Contact Form
+- [ ] Checkbox for consent to Privacy Policy
+- [ ] Link to Privacy Policy near checkbox
+
+---
+
+## Penalties for Non-Compliance
 
 > [!CAUTION]
-> GDPR штрафы: до €20 млн или 4% годового оборота (что больше)
+> GDPR fines: up to EUR 20 million or 4% of annual turnover (whichever is greater)
 
-Это не рекомендация, а требование закона для всех сайтов, обслуживающих пользователей в ЕС.
+This is not a recommendation, but a legal requirement for all websites serving EU users.

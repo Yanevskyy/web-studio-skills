@@ -1,27 +1,27 @@
 ---
 name: vercel-deploy
-description: "Используй для настройки автоматического деплоя. Git push = сайт обновился. Включает настройку доменов, переменных окружения, preview deployments."
+description: "Use when setting up automatic deploys. Git push = site updated. Includes domain setup, environment variables, preview deployments."
 ---
 
-# Vercel Deploy для Next.js
+# Vercel Deploy for Next.js
 
-## Когда использовать
+## When to use
 
-**ПРИ ПЕРВОМ ДЕПЛОЕ ПРОЕКТА** — настрой один раз, дальше всё автоматически.
+**ON FIRST PROJECT DEPLOY** — set up once, everything is automatic after.
 
 ---
 
-## Шаг 1: Подключение репозитория
+## Step 1: Connect Repository
 
-### Вариант A: Через Vercel Dashboard (рекомендуется)
+### Option A: Via Vercel Dashboard (recommended)
 
-1. Зайди на [vercel.com](https://vercel.com)
+1. Go to [vercel.com](https://vercel.com)
 2. "Add New Project"
-3. "Import Git Repository" → выбери GitHub репо
-4. Vercel автоматически определит Next.js
+3. "Import Git Repository" → select GitHub repo
+4. Vercel auto-detects Next.js
 5. "Deploy"
 
-### Вариант B: Через CLI
+### Option B: Via CLI
 
 ```bash
 npm i -g vercel
@@ -29,13 +29,13 @@ vercel login
 vercel
 ```
 
-**Результат:** Каждый `git push` в `main` = автоматический деплой.
+**Result:** Every `git push` to `main` = automatic deploy.
 
 ---
 
-## Шаг 2: Переменные окружения
+## Step 2: Environment Variables
 
-### В Vercel Dashboard:
+### In Vercel Dashboard:
 Settings → Environment Variables
 
 ```
@@ -45,56 +45,56 @@ STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 DATABASE_URL=postgresql://...
 ```
 
-### Правила:
-- `NEXT_PUBLIC_*` — доступны на клиенте
-- Без префикса — только на сервере
-- Разные значения для Production / Preview / Development
+### Rules:
+- `NEXT_PUBLIC_*` — available on client
+- Without prefix — server only
+- Different values for Production / Preview / Development
 
 ---
 
-## Шаг 3: Домен
+## Step 3: Domain
 
-### Добавление домена:
+### Adding a domain:
 Settings → Domains → Add Domain
 
-### DNS настройки (у регистратора):
+### DNS settings (at registrar):
 
-**Вариант A: Основной домен**
+**Option A: Root domain**
 ```
 Type: A
 Name: @
 Value: 76.76.21.21
 ```
 
-**Вариант B: С www**
+**Option B: With www**
 ```
 Type: CNAME
 Name: www
 Value: cname.vercel-dns.com
 ```
 
-### Редирект www → без www:
-Vercel делает автоматически после добавления обоих вариантов.
+### Redirect www → non-www:
+Vercel does it automatically after adding both variants.
 
 ---
 
-## Шаг 4: Preview Deployments
+## Step 4: Preview Deployments
 
-**Автоматически:** Каждый Pull Request получает уникальный URL.
+**Automatic:** Every Pull Request gets a unique URL.
 
-Пример: `https://project-git-feature-branch-username.vercel.app`
+Example: `https://project-git-feature-branch-username.vercel.app`
 
-### Использование:
-1. Создай PR
-2. Vercel создаст preview
-3. Тестируй на preview URL
-4. Merge → деплой в production
+### Usage:
+1. Create PR
+2. Vercel creates preview
+3. Test on preview URL
+4. Merge → deploy to production
 
 ---
 
-## Шаг 5: Оптимизация билда
+## Step 5: Build Optimization
 
-### vercel.json (опционально)
+### vercel.json (optional)
 
 ```json
 {
@@ -127,49 +127,49 @@ Vercel делает автоматически после добавления �
 }
 ```
 
-### Регионы (для скорости):
-- `dub1` — Дублин (Европа)
-- `iad1` — Вашингтон (США)
-- `sfo1` — Сан-Франциско
+### Regions (for speed):
+- `dub1` — Dublin (Europe)
+- `iad1` — Washington (US)
+- `sfo1` — San Francisco
 
 ---
 
-## Шаг 6: Rollback
+## Step 6: Rollback
 
-**Если что-то сломалось:**
+**If something breaks:**
 
 1. Vercel Dashboard → Deployments
-2. Найди предыдущий успешный деплой
-3. "⋮" → "Promote to Production"
+2. Find previous successful deploy
+3. "..." → "Promote to Production"
 
-**Или через CLI:**
+**Or via CLI:**
 ```bash
 vercel rollback
 ```
 
 ---
 
-## Чеклист деплоя
+## Deploy Checklist
 
-### Первый деплой:
-- [ ] Репозиторий подключён к Vercel
-- [ ] Environment variables настроены
-- [ ] Домен добавлен и DNS настроен
-- [ ] SSL сертификат активен (автоматически)
-- [ ] Preview deployments работают
+### First deploy:
+- [ ] Repository connected to Vercel
+- [ ] Environment variables configured
+- [ ] Domain added and DNS configured
+- [ ] SSL certificate active (automatic)
+- [ ] Preview deployments working
 
-### Каждый деплой:
-- [ ] `git push` триггерит билд
-- [ ] Билд проходит без ошибок
-- [ ] Проверь production URL после деплоя
+### Every deploy:
+- [ ] `git push` triggers build
+- [ ] Build completes without errors
+- [ ] Check production URL after deploy
 
 ---
 
 ## Troubleshooting
 
-| Проблема | Решение |
-|----------|---------|
-| Билд падает | Проверь логи в Vercel → Deployments |
-| 404 на страницах | Проверь `next.config.js` и роутинг |
-| Env переменные не работают | Передеплой после добавления переменных |
-| Домен не работает | Подожди 24-48ч для DNS propagation |
+| Problem | Solution |
+|---------|----------|
+| Build fails | Check logs in Vercel → Deployments |
+| 404 on pages | Check `next.config.js` and routing |
+| Env vars not working | Redeploy after adding variables |
+| Domain not working | Wait 24-48h for DNS propagation |

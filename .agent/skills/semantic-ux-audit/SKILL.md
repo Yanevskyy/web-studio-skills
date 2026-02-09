@@ -1,95 +1,97 @@
-# Semantic UX Audit (Смысловой Аудит UX)
+---
+name: semantic-ux-audit
+description: "Use before release or when adding new sections/pages. Finds logical UX errors that regular linters miss. Checks every button on every page without exceptions."
+---
 
-## Когда использовать
-**ОБЯЗАТЕЛЬНО** перед релизом или при добавлении новых секций/страниц.
-Этот аудит помогает найти логические ошибки, которые пропускают обычные линтеры.
-**ВАЖНО:** Не экономь ресурсы. Проверяй **абсолютно все** кнопки на **абсолютно всех** страницах без исключений.
+# Semantic UX Audit
+
+## When to use
+**REQUIRED** before release or when adding new sections/pages.
+This audit helps find logical errors that regular linters miss.
+**IMPORTANT:** Don't save resources. Check **absolutely every** button on **absolutely every** page without exceptions.
 
 ---
 
-## 🧠 Философия
-Пользователь не читает код. Он сканирует заголовки и ищет кнопки, которые решают его задачу. Если заголовок обещает "Услуги", а кнопка ведёт в "Портфолио" — это UX-ошибка, даже если ссылка рабочая.
+## Philosophy
+Users don't read code. They scan headings and look for buttons that solve their task. If a heading says "Services" but a button leads to "Portfolio" — that's a UX error, even if the link works.
 
 ---
 
-## 🔍 Методология аудита
+## Audit Methodology
 
-### 1. Правило "Header-Button Match" (Соответствие Заголовка и Кнопки)
-Для каждой секции проверь связку:
-`Заголовок Секции` -> `Текст Кнопки` -> `Целевая Страница`
+### 1. "Header-Button Match" Rule
+For each section, check the chain:
+`Section Heading` -> `Button Text` -> `Target Page`
 
-| Паттерн | Пример | Вердикт |
-|---------|--------|---------|
-| ✅ **Прямое соответствие** | Заголовок "Our Events" -> Кнопка "View Events" -> Ссылка `/events` | **Отлично** |
-| ⚠️ **Непрямое, но логичное** | Заголовок "Our Story" -> Кнопка "Learn More" -> Ссылка `/about` | **Хорошо** |
-| ❌ **Смысловой разрыв** | Заголовок "Private Events" -> Кнопка "See our work" -> Ссылка `/portfolio` | **ОШИБКА** (Пользователь хочет заказать услугу, а не смотреть фото) |
-| ❌ **Ложное обещание** | Заголовок "Contact Us" -> Кнопка "Email" -> Ссылка `mailto:` (без формы) | **Предупреждение** (Если обещали форму) |
+| Pattern | Example | Verdict |
+|---------|---------|---------|
+| **Direct match** | Heading "Our Events" -> Button "View Events" -> Link `/events` | **Excellent** |
+| **Indirect but logical** | Heading "Our Story" -> Button "Learn More" -> Link `/about` | **Good** |
+| **Semantic gap** | Heading "Private Events" -> Button "See our work" -> Link `/portfolio` | **ERROR** (User wants to book a service, not view photos) |
+| **False promise** | Heading "Contact Us" -> Button "Email" -> Link `mailto:` (no form) | **Warning** (If a form was promised) |
 
-### 2. Типы интента пользователя (User Intent)
+### 2. User Intent Types
 
-Определи, что хочет пользователь в этом блоке:
+Determine what the user wants in each block:
 
-1.  **Transactional (Купить/Заказать):**
-    *   Ключевые слова: *Buy, Order, Book, Reserve, Get Quote*
-    *   Цель: Корзина, Чекауут, Форма заказа, Контакт
-    *   Ошибка: Вести на информационную страницу (About, FAQ)
+1. **Transactional (Buy/Order):**
+    - Keywords: *Buy, Order, Book, Reserve, Get Quote*
+    - Goal: Cart, Checkout, Order form, Contact
+    - Error: Leading to informational page (About, FAQ)
 
-2.  **Informational (Узнать):**
-    *   Ключевые слова: *Learn, Read, Story, About, History*
-    *   Цель: About, Blog, FAQ
-    *   Ошибка: Вести сразу на чекаут или форму оплаты
+2. **Informational (Learn):**
+    - Keywords: *Learn, Read, Story, About, History*
+    - Goal: About, Blog, FAQ
+    - Error: Leading directly to checkout or payment form
 
-3.  **Navigational (Найти):**
-    *   Ключевые слова: *Find us, Location, Visit*
-    *   Цель: Contact, Google Maps
-    *   Ошибка: Вести на главную
+3. **Navigational (Find):**
+    - Keywords: *Find us, Location, Visit*
+    - Goal: Contact, Google Maps
+    - Error: Leading to homepage
 
-### 3. Чеклист проверки секции
+### 3. Section Review Checklist
 
-Для каждой контентной секции задай 3 вопроса:
-1.  **О чём говорит заголовок?** (Пример: "Мы делаем свадьбы")
-2.  **Что обещает кнопка?** (Пример: "Узнать подробнее")
-3.  **Куда реально ведёт ссылка?** (Пример: "/portfolio")
+For each content section, ask 3 questions:
+1. **What does the heading say?** (Example: "We do weddings")
+2. **What does the button promise?** (Example: "Learn more")
+3. **Where does the link actually go?** (Example: "/portfolio")
 
-**Если 1 и 3 не совпадают по смыслу — это баг.**
-
-В примере выше: Свадьбы — это Услуга (`/services` или `/events`). Портфолио — это примеры (`/portfolio`). Разрыв контекста.
+**If 1 and 3 don't match semantically — it's a bug.**
 
 ---
 
-## 🛠 Как проводить (Пошагово)
+## Step-by-Step Process
 
-1.  **Полный реестр страниц (Strict Mode):**
-    *   **ОБЯЗАТЕЛЬНО:** Составь полный список всех файлов в директории `pages` (или `app`).
-    *   **ЗАПРЕЩЕНО:** Проверять только "главные" страницы.
-    *   **ЗАПРЕЩЕНО:** Игнорировать служебные страницы (404, Privacy, Terms, Auth).
-    *   Используй команду `ls` или `find`, чтобы увидеть *каждый* файл. Аудит считается проваленным, если пропущена хоть одна страница.
+1. **Full page inventory (Strict Mode):**
+    - **REQUIRED:** Compile a complete list of all files in `pages` (or `app`) directory.
+    - **FORBIDDEN:** Check only "main" pages.
+    - **FORBIDDEN:** Ignore utility pages (404, Privacy, Terms, Auth).
+    - Use `ls` or `find` to see *every* file. The audit is considered failed if even one page is skipped.
 
-2.  **Проход по главной странице:**
-    Иди сверху вниз и проверяй каждый CTA (Call to Action).
+2. **Homepage walkthrough:**
+    Go top to bottom and check every CTA:
+    - *Hero:* Where does the main CTA lead? Does it match the main value proposition?
+    - *Feature Block:* Does the button lead to details about this specific feature?
+    - *Footer:* Do all footer links go where expected?
 
-    *   *Hero:* Куда ведёт главный CTA? Соответствует ли он главному предложению ценности?
-    *   *Feature Block:* Ведёт ли кнопка на подробности именно об этой фиче?
-    *   *Footer:* Все ли ссылки в футере ведут туда, куда ожидается?
-
-3.  **Анализ "Тупиков":**
-    Есть ли страницы, с которых некуда идти дальше (кроме "Назад")?
-    *   *Пример:* Страница "Спасибо за заказ" без кнопки "На главную".
-    *   *Решение:* Добавить навигационный выход.
-
----
-
-## 🚨 Типичные семантические ошибки
-
-| Ошибка | Почему это плохо | Как исправить |
-|--------|------------------|---------------|
-| Кнопка "Services" ведёт на "Contact" | Пользователь хочет почитать, а не звонить | Вести на `/services`, там сделать CTA |
-| "Read More" в блоке про команду ведёт на `/about` | Слишком широко | Вести на секцию `/about#team` |
-| "Order Now" открывает PDF меню | Разрыв шаблона "Заказ" | Назвать кнопку "View Menu" |
-| Неактивные хлебные крошки | Пользователь не понимает где он | Сделать родительские категории ссылками |
+3. **Dead-end analysis:**
+    Are there pages with no way forward (except "Back")?
+    - *Example:* "Thank you for your order" page without a "Home" button.
+    - *Solution:* Add a navigation exit.
 
 ---
 
-## ✅ Финальный вопрос аудитора
+## Common Semantic Errors
 
-> "Проверил ли я каждую страницу из списка файлов? Уверен ли я, что ни одна, даже самая скрытая кнопка, не ведёт в смысловой тупик?"
+| Error | Why it's bad | How to fix |
+|-------|-------------|-----------|
+| "Services" button leads to "Contact" | User wants to read, not call | Lead to `/services`, add CTA there |
+| "Read More" in team section leads to `/about` | Too broad | Lead to `/about#team` section |
+| "Order Now" opens a PDF menu | Breaks "Order" expectation | Name button "View Menu" |
+| Inactive breadcrumbs | User can't tell where they are | Make parent categories clickable |
+
+---
+
+## Auditor's Final Question
+
+> "Have I checked every page from the file list? Am I certain that no button, even the most hidden one, leads to a semantic dead-end?"

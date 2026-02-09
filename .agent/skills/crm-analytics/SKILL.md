@@ -1,122 +1,108 @@
 ---
 name: crm-analytics
-description: "Используй для финансовых отчётов и дашбордов CRM. Выручка, оплаченные/просроченные инвойсы, метрики по клиентам и услугам. Только чтение данных — НЕ создаёт CRM-схему и НЕ реализует платежи."
+description: "Use for CRM financial reports and dashboards. Revenue, paid/overdue invoices, customer and service metrics. Read-only — does NOT create CRM schema or handle payments."
 ---
 
-# CRM Analytics — Финансовые Отчёты и Дашборды
+# CRM Analytics — Financial Reports & Dashboards
 
-## Когда использовать
+## When to use
 
-**ПРИ СОЗДАНИИ ФИНАНСОВЫХ ОТЧЁТОВ** и дашбордов для CRM-системы.
+**WHEN BUILDING FINANCIAL REPORTS** and dashboards for a CRM system.
 
-Этот скилл отвечает ТОЛЬКО за:
-- Чтение данных из CRM и инвойсов
-- Агрегации и метрики (выручка, DSO, LTV)
-- SQL-запросы и view
-- UI дашборда
+This skill is ONLY about:
+- Reading CRM and invoice data
+- Aggregations and metrics (revenue, DSO, LTV)
+- SQL queries and views
+- Dashboard UI
 
-**НЕ входит** в этот скилл:
-- Создание CRM-схемы (customers, services) → используй `crm-core`
-- Платежи и Stripe → используй `crm-invoicing`
-
----
-
-## Шаг 1: Проверка источников данных
-
-Перед построением отчётов определи, какие таблицы доступны:
-
-| Таблица | Скилл-источник | Обязательна? |
-|---------|---------------|-------------|
-| `customers` | crm-core | Да |
-| `crm_services` | crm-core | Да |
-| `crm_invoices` | crm-invoicing | Да |
-| `crm_projects` | crm-core | Опционально |
-
-Если таблиц нет — сначала примени `crm-core` и `crm-invoicing`.
-
-### Уточняющие вопросы:
-
-1. Какая метрика самая важная? (выручка, прибыль, просрочки)
-2. Гранулярность по времени? (день / неделя / месяц)
-3. Нужно ли учитывать VAT/налоги?
-4. Стек для аналитики? (SQL, Supabase views, Prisma, внешний BI)
+**NOT in scope:**
+- CRM schema creation (customers, services) → use `crm-core`
+- Payments and Stripe → use `crm-invoicing`
 
 ---
 
-## Шаг 2: Ключевые метрики
+## Step 1: Verify Data Sources
 
-### Выручка
+Before building reports, identify available tables:
 
-| Метрика | Формула | Источник |
-|---------|---------|----------|
-| Общая выручка | SUM(amount) WHERE status = 'paid' | crm_invoices |
-| Выручка за период | Фильтр по `paid_at` | crm_invoices |
-| Выручка по услуге | GROUP BY service_id | crm_invoices + crm_services |
-| Выручка по клиенту | GROUP BY customer_id | crm_invoices + customers |
+| Table | Source Skill | Required? |
+|-------|-------------|-----------|
+| `customers` | crm-core | Yes |
+| `crm_services` | crm-core | Yes |
+| `crm_invoices` | crm-invoicing | Yes |
+| `crm_projects` | crm-core | Optional |
 
-### Инвойсы
+If tables don't exist — apply `crm-core` and `crm-invoicing` first.
 
-| Метрика | Формула | Источник |
-|---------|---------|----------|
-| Выставлено | COUNT(*) | crm_invoices |
-| Оплачено | COUNT(*) WHERE status = 'paid' | crm_invoices |
-| Просрочено | WHERE status = 'sent' AND due_date < now() | crm_invoices |
+### Clarifying questions:
+
+1. Most important metric? (revenue, profit, overdue)
+2. Time granularity? (day / week / month)
+3. Is VAT/tax relevant?
+4. Analytics stack? (SQL, Supabase views, Prisma, external BI)
+
+---
+
+## Step 2: Key Metrics
+
+### Revenue
+
+| Metric | Formula | Source |
+|--------|---------|--------|
+| Total revenue | SUM(amount) WHERE status = 'paid' | crm_invoices |
+| Revenue per period | Filter by `paid_at` | crm_invoices |
+| Revenue by service | GROUP BY service_id | crm_invoices + crm_services |
+| Revenue by customer | GROUP BY customer_id | crm_invoices + customers |
+
+### Invoices
+
+| Metric | Formula | Source |
+|--------|---------|--------|
+| Issued | COUNT(*) | crm_invoices |
+| Paid | COUNT(*) WHERE status = 'paid' | crm_invoices |
+| Overdue | WHERE status = 'sent' AND due_date < now() | crm_invoices |
 | DSO (Days Sales Outstanding) | AVG(paid_at - sent_at) | crm_invoices |
 
-### Клиенты
+### Customers
 
-| Метрика | Формула | Источник |
-|---------|---------|----------|
-| Активных клиентов | COUNT DISTINCT customer_id WHERE paid в последние N дней | crm_invoices |
-| LTV (простой) | SUM(amount) WHERE status = 'paid' / COUNT DISTINCT customers | crm_invoices |
-| Новые vs возвратные | По дате первого инвойса клиента | crm_invoices |
+| Metric | Formula | Source |
+|--------|---------|--------|
+| Active customers | COUNT DISTINCT customer_id paid in last N days | crm_invoices |
+| LTV (simple) | SUM(amount) paid / COUNT DISTINCT customers | crm_invoices |
+| New vs returning | By first invoice date per customer | crm_invoices |
 
-Подробные SQL-запросы — в [reference.md](reference.md).
+Detailed SQL queries — in [reference.md](reference.md).
 
 ---
 
-## Шаг 3: Серверные хелперы
+## Step 3: Server Helpers
 
 ```ts
 // lib/crm-analytics.ts
 import { prisma } from '@/lib/prisma'
 
-// Revenue summary for a date range
 export async function getRevenueSummary(from: Date, to: Date) {
   const invoices = await prisma.invoice.findMany({
-    where: {
-      status: 'PAID',
-      paidAt: { gte: from, lte: to },
-    },
+    where: { status: 'PAID', paidAt: { gte: from, lte: to } },
     select: { amount: true, currency: true, paidAt: true },
   })
-
   const total = invoices.reduce((sum, inv) => sum + Number(inv.amount), 0)
-
   return { total, count: invoices.length, currency: 'EUR' }
 }
 
-// Revenue per service
 export async function getRevenueByService(from: Date, to: Date) {
   const result = await prisma.invoice.groupBy({
     by: ['serviceId'],
-    where: {
-      status: 'PAID',
-      paidAt: { gte: from, lte: to },
-    },
+    where: { status: 'PAID', paidAt: { gte: from, lte: to } },
     _sum: { amount: true },
     _count: true,
   })
-
-  // Enrich with service names
   const serviceIds = result.map((r) => r.serviceId).filter(Boolean) as string[]
   const services = await prisma.service.findMany({
     where: { id: { in: serviceIds } },
     select: { id: true, name: true, code: true },
   })
-
   const serviceMap = Object.fromEntries(services.map((s) => [s.id, s]))
-
   return result.map((r) => ({
     service: serviceMap[r.serviceId!] ?? { name: 'Unknown' },
     revenue: Number(r._sum.amount),
@@ -124,22 +110,17 @@ export async function getRevenueByService(from: Date, to: Date) {
   }))
 }
 
-// Invoice status breakdown
 export async function getInvoiceStatusBreakdown() {
   const result = await prisma.invoice.groupBy({
     by: ['status'],
     _count: true,
     _sum: { amount: true },
   })
-
   return result.map((r) => ({
-    status: r.status,
-    count: r._count,
-    totalAmount: Number(r._sum.amount),
+    status: r.status, count: r._count, totalAmount: Number(r._sum.amount),
   }))
 }
 
-// Top customers by revenue
 export async function getTopCustomers(limit = 10) {
   const result = await prisma.invoice.groupBy({
     by: ['customerId'],
@@ -149,15 +130,12 @@ export async function getTopCustomers(limit = 10) {
     orderBy: { _sum: { amount: 'desc' } },
     take: limit,
   })
-
   const customerIds = result.map((r) => r.customerId)
   const customers = await prisma.customer.findMany({
     where: { id: { in: customerIds } },
     select: { id: true, name: true, company: true },
   })
-
   const customerMap = Object.fromEntries(customers.map((c) => [c.id, c]))
-
   return result.map((r) => ({
     customer: customerMap[r.customerId],
     revenue: Number(r._sum.amount),
@@ -165,13 +143,9 @@ export async function getTopCustomers(limit = 10) {
   }))
 }
 
-// Overdue invoices
 export async function getOverdueInvoices() {
   return prisma.invoice.findMany({
-    where: {
-      status: 'SENT',
-      dueDate: { lt: new Date() },
-    },
+    where: { status: 'SENT', dueDate: { lt: new Date() } },
     include: { customer: true, service: true },
     orderBy: { dueDate: 'asc' },
   })
@@ -180,17 +154,12 @@ export async function getOverdueInvoices() {
 
 ---
 
-## Шаг 4: API Routes
+## Step 4: API Route
 
 ```ts
 // app/api/crm/analytics/route.ts
 import { NextResponse } from 'next/server'
-import {
-  getRevenueSummary,
-  getRevenueByService,
-  getInvoiceStatusBreakdown,
-  getTopCustomers,
-} from '@/lib/crm-analytics'
+import { getRevenueSummary, getRevenueByService, getInvoiceStatusBreakdown, getTopCustomers } from '@/lib/crm-analytics'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -204,25 +173,17 @@ export async function GET(req: Request) {
     getTopCustomers(10),
   ])
 
-  return NextResponse.json({
-    success: true,
-    data: { revenue, byService, statusBreakdown, topCustomers },
-  })
+  return NextResponse.json({ success: true, data: { revenue, byService, statusBreakdown, topCustomers } })
 }
 ```
 
 ---
 
-## Шаг 5: Дашборд UI
+## Step 5: Dashboard UI
 
 ```tsx
 // app/crm/analytics/page.tsx
-import {
-  getRevenueSummary,
-  getInvoiceStatusBreakdown,
-  getTopCustomers,
-  getOverdueInvoices,
-} from '@/lib/crm-analytics'
+import { getRevenueSummary, getInvoiceStatusBreakdown, getTopCustomers, getOverdueInvoices } from '@/lib/crm-analytics'
 
 export default async function AnalyticsDashboard() {
   const now = new Date()
@@ -237,49 +198,44 @@ export default async function AnalyticsDashboard() {
 
   return (
     <div className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold">Финансовый дашборд</h1>
+      <h1 className="text-2xl font-bold">Financial Dashboard</h1>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="rounded-lg border p-6">
-          <p className="text-sm text-muted-foreground">Выручка (30 дней)</p>
-          <p className="text-3xl font-bold">€{revenue.total.toFixed(2)}</p>
-          <p className="text-sm text-muted-foreground">{revenue.count} инвойсов</p>
+          <p className="text-sm text-muted-foreground">Revenue (30 days)</p>
+          <p className="text-3xl font-bold">&euro;{revenue.total.toFixed(2)}</p>
+          <p className="text-sm text-muted-foreground">{revenue.count} invoices</p>
         </div>
         {statuses.map((s) => (
           <div key={s.status} className="rounded-lg border p-6">
             <p className="text-sm text-muted-foreground">{s.status}</p>
             <p className="text-2xl font-bold">{s.count}</p>
-            <p className="text-sm">€{s.totalAmount.toFixed(2)}</p>
+            <p className="text-sm">&euro;{s.totalAmount.toFixed(2)}</p>
           </div>
         ))}
       </div>
 
-      {/* Overdue Warning */}
       {overdue.length > 0 && (
         <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-4">
-          <p className="font-medium text-red-800">
-            Просроченных инвойсов: {overdue.length}
-          </p>
+          <p className="font-medium text-red-800">Overdue invoices: {overdue.length}</p>
         </div>
       )}
 
-      {/* Top Customers */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Топ клиентов по выручке</h2>
+        <h2 className="text-lg font-semibold mb-3">Top Customers by Revenue</h2>
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b text-left text-sm text-muted-foreground">
-              <th className="p-3">Клиент</th>
-              <th className="p-3">Выручка</th>
-              <th className="p-3">Инвойсов</th>
+              <th className="p-3">Customer</th>
+              <th className="p-3">Revenue</th>
+              <th className="p-3">Invoices</th>
             </tr>
           </thead>
           <tbody>
             {topCustomers.map((c) => (
               <tr key={c.customer.id} className="border-b">
                 <td className="p-3">{c.customer.name}</td>
-                <td className="p-3">€{c.revenue.toFixed(2)}</td>
+                <td className="p-3">&euro;{c.revenue.toFixed(2)}</td>
                 <td className="p-3">{c.invoiceCount}</td>
               </tr>
             ))}
@@ -293,32 +249,32 @@ export default async function AnalyticsDashboard() {
 
 ---
 
-## Правила
+## Rules
 
-- **Только чтение данных.** Аналитика не модифицирует CRM-записи и не создаёт платежи.
-- **Все агрегации — на сервере.** Не тяни все записи на клиент.
-- **Учитывай RLS** при работе с Supabase.
-- **Определяй метрики чётко** перед написанием запросов.
+- **Read-only.** Analytics does not modify CRM records or create payments.
+- **All aggregations server-side.** Don't pull all records to the client.
+- **Respect RLS** when using Supabase.
+- **Define metrics clearly** before writing queries.
 
 ---
 
-## Чеклист
+## Checklist
 
-### Данные
-- [ ] Таблицы `customers`, `crm_services`, `crm_invoices` существуют
-- [ ] Есть данные для отчётов (хотя бы тестовые)
+### Data
+- [ ] Tables `customers`, `crm_services`, `crm_invoices` exist
+- [ ] Test data available for reports
 
-### Серверная часть
-- [ ] `lib/crm-analytics.ts` — хелперы для агрегаций
-- [ ] Revenue summary (общая, за период)
+### Server-side
+- [ ] `lib/crm-analytics.ts` — aggregation helpers
+- [ ] Revenue summary (total, per period)
 - [ ] Revenue by service
 - [ ] Invoice status breakdown
 - [ ] Top customers
 - [ ] Overdue invoices
 
-### UI Дашборд
-- [ ] KPI-карточки (выручка, кол-во инвойсов)
-- [ ] Предупреждение о просроченных инвойсах
-- [ ] Таблица топ-клиентов
-- [ ] Фильтр по дате (опционально)
-- [ ] Дашборд защищён авторизацией
+### Dashboard UI
+- [ ] KPI cards (revenue, invoice count)
+- [ ] Overdue invoice warning
+- [ ] Top customers table
+- [ ] Date filter (optional)
+- [ ] Dashboard protected by auth

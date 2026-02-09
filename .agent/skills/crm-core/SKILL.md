@@ -1,46 +1,46 @@
 ---
 name: crm-core
-description: "Используй при создании CRM-системы: клиенты, услуги (тарифы/пакеты), проекты. Модели данных, CRUD-хелперы, админ-UI. НЕ включает платежи и аналитику."
+description: "Use when building a CRM system: customers, services (tariffs/packages), projects. Data models, CRUD helpers, admin UI. Does NOT include payments or analytics."
 ---
 
-# CRM Core — Клиенты, Услуги, Проекты
+# CRM Core — Customers, Services, Projects
 
-## Когда использовать
+## When to use
 
-**ПРИ СОЗДАНИИ CRM** — управление клиентами, услугами и проектами.
+**WHEN BUILDING A CRM** — managing customers, services, and projects.
 
-Этот скилл отвечает ТОЛЬКО за:
-- Модель данных (customers, services, projects)
-- Серверные CRUD-хелперы
-- Базовый админ-UI
+This skill is ONLY about:
+- Data model (customers, services, projects)
+- Server-side CRUD helpers
+- Basic admin UI
 
-**НЕ входит** в этот скилл:
-- Stripe, платежи, инвойсы → используй `crm-invoicing`
-- Финансовые отчёты, дашборды → используй `crm-analytics`
-
----
-
-## Шаг 1: Уточнение требований
-
-Перед началом работы задай 2–4 вопроса:
-
-1. Что такое "клиент" в этом проекте? (физлицо, компания, и то и другое)
-2. Что такое "услуга"? (тариф, пакет, разовая работа)
-3. Нужны ли "проекты" для клиентов сейчас или позже?
-4. Какой стек БД используется? (Supabase, Prisma, Drizzle)
-
-**Не угадывай бизнес-модель** — всегда спроси.
+**NOT in scope:**
+- Stripe, payments, invoices → use `crm-invoicing`
+- Financial reports, dashboards → use `crm-analytics`
 
 ---
 
-## Шаг 2: Схема базы данных
+## Step 1: Clarify Requirements
 
-### Prisma-схема
+Before starting, ask 2-4 questions:
+
+1. What is a "customer" in this project? (individual, company, both)
+2. What is a "service"? (tariff, package, one-time work)
+3. Are "projects" per customer needed now or later?
+4. What DB stack is used? (Supabase, Prisma, Drizzle)
+
+**Do NOT guess the business model** — always ask.
+
+---
+
+## Step 2: Database Schema
+
+### Prisma Schema
 
 ```prisma
 // prisma/schema.prisma
 
-// ============ КЛИЕНТЫ ============
+// ============ CUSTOMERS ============
 
 model Customer {
   id              String    @id @default(cuid())
@@ -64,7 +64,7 @@ enum CustomerStatus {
   ARCHIVED
 }
 
-// ============ УСЛУГИ (ТАРИФЫ / ПАКЕТЫ) ============
+// ============ SERVICES (TARIFFS / PACKAGES) ============
 
 model Service {
   id              String    @id @default(cuid())
@@ -82,7 +82,7 @@ model Service {
   @@map("crm_services")
 }
 
-// ============ ПРОЕКТЫ ============
+// ============ PROJECTS ============
 
 model Project {
   id              String    @id @default(cuid())
@@ -111,7 +111,7 @@ enum ProjectStatus {
 }
 ```
 
-### Supabase SQL (альтернатива)
+### Supabase SQL (alternative)
 
 ```sql
 -- customers
@@ -162,14 +162,13 @@ ALTER TABLE crm_projects ENABLE ROW LEVEL SECURITY;
 
 ---
 
-## Шаг 3: Серверные хелперы
+## Step 3: Server Helpers
 
-### Клиенты (`lib/crm-customers.ts`)
+### Customers (`lib/crm-customers.ts`)
 
 ```ts
 import { prisma } from '@/lib/prisma'
 
-// List customers with optional search
 export async function listCustomers(search?: string) {
   return prisma.customer.findMany({
     where: search
@@ -185,7 +184,6 @@ export async function listCustomers(search?: string) {
   })
 }
 
-// Get single customer with projects
 export async function getCustomer(id: string) {
   return prisma.customer.findUnique({
     where: { id },
@@ -193,42 +191,25 @@ export async function getCustomer(id: string) {
   })
 }
 
-// Create customer
 export async function createCustomer(data: {
-  name: string
-  email?: string
-  phone?: string
-  company?: string
-  notes?: string
+  name: string; email?: string; phone?: string; company?: string; notes?: string
 }) {
   return prisma.customer.create({ data })
 }
 
-// Update customer
 export async function updateCustomer(
   id: string,
-  data: Partial<{
-    name: string
-    email: string
-    phone: string
-    company: string
-    notes: string
-    status: 'ACTIVE' | 'ARCHIVED'
-  }>
+  data: Partial<{ name: string; email: string; phone: string; company: string; notes: string; status: 'ACTIVE' | 'ARCHIVED' }>
 ) {
   return prisma.customer.update({ where: { id }, data })
 }
 
-// Archive (soft delete)
 export async function archiveCustomer(id: string) {
-  return prisma.customer.update({
-    where: { id },
-    data: { status: 'ARCHIVED' },
-  })
+  return prisma.customer.update({ where: { id }, data: { status: 'ARCHIVED' } })
 }
 ```
 
-### Услуги (`lib/crm-services.ts`)
+### Services (`lib/crm-services.ts`)
 
 ```ts
 import { prisma } from '@/lib/prisma'
@@ -240,43 +221,25 @@ export async function listServices(activeOnly = true) {
   })
 }
 
-export async function getService(id: string) {
-  return prisma.service.findUnique({ where: { id } })
-}
-
 export async function createService(data: {
-  code: string
-  name: string
-  description?: string
-  amount: number
-  currency?: string
+  code: string; name: string; description?: string; amount: number; currency?: string
 }) {
   return prisma.service.create({ data })
 }
 
 export async function updateService(
   id: string,
-  data: Partial<{
-    code: string
-    name: string
-    description: string
-    amount: number
-    currency: string
-    isActive: boolean
-  }>
+  data: Partial<{ code: string; name: string; description: string; amount: number; currency: string; isActive: boolean }>
 ) {
   return prisma.service.update({ where: { id }, data })
 }
 
 export async function archiveService(id: string) {
-  return prisma.service.update({
-    where: { id },
-    data: { isActive: false },
-  })
+  return prisma.service.update({ where: { id }, data: { isActive: false } })
 }
 ```
 
-### Проекты (`lib/crm-projects.ts`)
+### Projects (`lib/crm-projects.ts`)
 
 ```ts
 import { prisma } from '@/lib/prisma'
@@ -290,29 +253,21 @@ export async function listProjects(customerId?: string) {
 }
 
 export async function createProject(data: {
-  name: string
-  customerId: string
-  description?: string
-  startDate?: Date
-  endDate?: Date
+  name: string; customerId: string; description?: string; startDate?: Date; endDate?: Date
 }) {
   return prisma.project.create({ data })
 }
 
 export async function updateProjectStatus(
-  id: string,
-  status: 'PLANNED' | 'ACTIVE' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED'
+  id: string, status: 'PLANNED' | 'ACTIVE' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED'
 ) {
-  return prisma.project.update({
-    where: { id },
-    data: { status },
-  })
+  return prisma.project.update({ where: { id }, data: { status } })
 }
 ```
 
 ---
 
-## Шаг 4: API Routes
+## Step 4: API Routes
 
 ```ts
 // app/api/crm/customers/route.ts
@@ -335,9 +290,9 @@ export async function POST(req: Request) {
 
 ---
 
-## Шаг 5: Базовый CRM UI
+## Step 5: Basic CRM UI
 
-Размести CRM-страницы в `/crm` или `/admin`. Защити авторизацией проекта.
+Place CRM pages under `/crm` or `/admin`. Guard with your project's auth.
 
 ```tsx
 // app/crm/customers/page.tsx
@@ -349,35 +304,26 @@ export default async function CustomersPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Клиенты</h1>
-        <a href="/crm/customers/new" className="btn btn-primary">
-          + Новый клиент
-        </a>
+        <h1 className="text-2xl font-bold">Customers</h1>
+        <a href="/crm/customers/new" className="btn btn-primary">+ New Customer</a>
       </div>
-
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b text-left text-sm text-muted-foreground">
-            <th className="p-3">Имя</th>
+            <th className="p-3">Name</th>
             <th className="p-3">Email</th>
-            <th className="p-3">Компания</th>
-            <th className="p-3">Статус</th>
+            <th className="p-3">Company</th>
+            <th className="p-3">Status</th>
           </tr>
         </thead>
         <tbody>
           {customers.map((c) => (
             <tr key={c.id} className="border-b hover:bg-muted/50">
-              <td className="p-3">
-                <a href={`/crm/customers/${c.id}`} className="underline">
-                  {c.name}
-                </a>
-              </td>
+              <td className="p-3"><a href={`/crm/customers/${c.id}`} className="underline">{c.name}</a></td>
               <td className="p-3">{c.email}</td>
               <td className="p-3">{c.company}</td>
               <td className="p-3">
-                <span className={c.status === 'ACTIVE' ? 'text-green-600' : 'text-gray-400'}>
-                  {c.status}
-                </span>
+                <span className={c.status === 'ACTIVE' ? 'text-green-600' : 'text-gray-400'}>{c.status}</span>
               </td>
             </tr>
           ))}
@@ -390,32 +336,32 @@ export default async function CustomersPage() {
 
 ---
 
-## Правила
+## Rules
 
-- **БД — единственный источник правды.** Не хардкодь клиентов или услуги в коде.
-- **Soft delete** через поле `status` / `isActive`. Не удаляй записи физически.
-- **Переиспользуй существующие паттерны** проекта (ORM, API-стиль, auth, RLS).
-- **Не добавляй Stripe или платёжную логику** — это скилл `crm-invoicing`.
+- **DB is the single source of truth.** Do not hardcode customers or services in code.
+- **Soft delete** via `status` / `isActive` field. Do not physically delete records.
+- **Reuse existing patterns** from the project (ORM, API style, auth, RLS).
+- **Do not add Stripe or payment logic** — that belongs to `crm-invoicing`.
 
 ---
 
-## Чеклист
+## Checklist
 
-### Схема данных
-- [ ] Таблица `customers` создана
-- [ ] Таблица `crm_services` создана
-- [ ] Таблица `crm_projects` создана (или запланирована)
-- [ ] Миграция применена
+### Data Schema
+- [ ] `customers` table created
+- [ ] `crm_services` table created
+- [ ] `crm_projects` table created (or planned)
+- [ ] Migration applied
 
-### Серверная часть
-- [ ] Хелперы для customers (list, get, create, update, archive)
-- [ ] Хелперы для services (list, get, create, update, archive)
-- [ ] Хелперы для projects (list, create, updateStatus)
-- [ ] API routes или server actions работают
+### Server-side
+- [ ] Customer helpers (list, get, create, update, archive)
+- [ ] Service helpers (list, get, create, update, archive)
+- [ ] Project helpers (list, create, updateStatus)
+- [ ] API routes or server actions working
 
 ### UI
-- [ ] Список клиентов с поиском
-- [ ] Создание/редактирование клиента
-- [ ] Список услуг с фильтром по `isActive`
-- [ ] Создание/редактирование услуги
-- [ ] CRM защищена авторизацией
+- [ ] Customer list with search
+- [ ] Create/edit customer
+- [ ] Service list with `isActive` filter
+- [ ] Create/edit service
+- [ ] CRM protected by auth
