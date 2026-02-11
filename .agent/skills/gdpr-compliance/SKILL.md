@@ -141,35 +141,83 @@ Footer must include links to:
 
 ## Mobile Footer
 
+> [!WARNING]
+> **Common Mistake:** Using `flex gap-16` for 3+ columns causes horizontal overflow on mobile (375px).
+> Always use `grid` for footer navigation columns, not `flex` with large gaps.
+
 Footer on mobile devices:
 
-- [ ] Should use 2+ columns (not one long column)
-- [ ] Legal links can be inline (flex row)
+- [ ] **MUST use grid** for 3+ navigation columns (Navigate, Connect, Legal)
+- [ ] Legal column spans full width on mobile (`col-span-2`)
+- [ ] Legal links inline on mobile (`flex flex-wrap`)
 - [ ] Reduced padding on mobile
 - [ ] Smaller logo on mobile
 
-**Example:**
+### Recommended Footer Structure (3 columns)
+
 ```jsx
-// Mobile: 2 columns, Legal links inline
-<div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-  <div className="col-span-2 md:col-span-1">
+{/* Footer content wrapper */}
+<div className="flex flex-col gap-12 md:flex-row md:justify-between">
+  {/* Identity - Logo and description */}
+  <div className="space-y-4 md:max-w-xs">
     {/* Logo */}
+    {/* Description */}
   </div>
-  <div className="col-span-1">
-    {/* Navigation */}
-  </div>
-  <div className="col-span-1">
-    {/* Contact */}
-  </div>
-  <div className="col-span-2 md:col-span-1">
-    {/* Legal - inline on mobile */}
-    <ul className="flex flex-wrap gap-4 md:block md:space-y-3">
-      <li><Link to="/privacy">Privacy</Link></li>
-      <li><Link to="/cookie">Cookies</Link></li>
-      <li><Link to="/terms">Terms</Link></li>
-    </ul>
+
+  {/* Navigation columns - MUST use grid, NOT flex! */}
+  <div className="grid grid-cols-2 gap-8 md:flex md:gap-20">
+    {/* Navigate column */}
+    <div className="space-y-4">
+      <p className="text-xs uppercase tracking-[0.15em] text-muted">Navigate</p>
+      <ul className="space-y-2">
+        <li><Link href="/about">About</Link></li>
+        <li><Link href="/services">Services</Link></li>
+      </ul>
+    </div>
+
+    {/* Connect column */}
+    <div className="space-y-4">
+      <p className="text-xs uppercase tracking-[0.15em] text-muted">Connect</p>
+      <ul className="space-y-2">
+        <li><Link href="/contact">Contact</Link></li>
+      </ul>
+    </div>
+
+    {/* Legal column - spans full width on mobile */}
+    <div className="space-y-4 col-span-2 md:col-span-1">
+      <p className="text-xs uppercase tracking-[0.15em] text-muted">Legal</p>
+      {/* Inline on mobile, vertical on desktop */}
+      <ul className="flex flex-wrap gap-x-6 gap-y-2 md:block md:space-y-2">
+        <li><Link href="/privacy">Privacy Policy</Link></li>
+        <li><Link href="/cookies">Cookie Policy</Link></li>
+        <li><Link href="/terms">Terms of Service</Link></li>
+      </ul>
+    </div>
   </div>
 </div>
+```
+
+### Why grid instead of flex?
+
+| Approach | Mobile (375px) | Result |
+|----------|----------------|--------|
+| `flex gap-16` | 3 cols × 64px gaps = overflow | Broken layout, horizontal scroll |
+| `grid grid-cols-2` | 2 cols + Legal full width | Clean, no overflow |
+
+### Mobile Layout Visualization
+
+```
+┌─────────────────────────────┐
+│         Logo                │
+│      Description            │
+├──────────────┬──────────────┤
+│   Navigate   │   Connect    │
+│   • About    │   • Contact  │
+│   • Services │              │
+├──────────────┴──────────────┤
+│            Legal            │
+│  Privacy · Cookies · Terms  │
+└─────────────────────────────┘
 ```
 
 ---
