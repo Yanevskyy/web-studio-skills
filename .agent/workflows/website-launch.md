@@ -42,10 +42,17 @@ description: Полный цикл запуска сайта от дизайна
 19. Используй скилл `facebook-pixel` — добавь Meta Pixel
 20. Проверь что события отслеживаются
 
-## Фаза 5: Email
+## Фаза 5: Email (Brevo)
 
-21. Используй скилл `email-integration` — настрой контактную форму
-22. Протестируй отправку
+21. Используй скилл `brevo-email-workflow` — выполни полный workflow:
+    - Brevo аккаунт + API ключ
+    - Верификация домена (SPF/DKIM/DMARC)
+    - Environment variables (.env.local, .env.example, Vercel)
+    - lib/config.ts с контактными данными
+    - API route app/api/contact/route.ts
+    - HTML email шаблоны (админу + клиенту)
+    - Контактная форма
+22. Протестируй отправку по чеклисту из скилла (разными email-провайдерами)
 
 ## Фаза 6: Final Deploy
 

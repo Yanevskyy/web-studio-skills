@@ -1,6 +1,6 @@
 # Web Studio Skills
 
-A collection of 23 AI skills for web development with React/Next.js + Tailwind CSS.
+A collection of 24 AI skills for web development with React/Next.js + Tailwind CSS.
 
 ## Installation
 
@@ -51,7 +51,8 @@ rm -rf temp-skills
 ### E-commerce
 - `stripe-integration` — Stripe Checkout payments
 - `ecommerce-database` — Prisma schema for online store
-- `email-integration` — Forms and transactional emails
+- `email-integration` — Forms and transactional emails (EmailJS, Resend, Nodemailer)
+- `brevo-email-workflow` — **Production-ready** Brevo email: domain verification, API route, HTML templates, testing checklist
 
 ### CRM
 - `crm-core` — Customers, services, projects: data models, CRUD, admin UI
