@@ -1,6 +1,6 @@
 ---
 name: gdpr-compliance
-description: "GDPR/CCPA checklist for EU websites. Required pages, Cookie Banner, consent. Use before deploying to production."
+description: "GDPR/CCPA compliance + ClarityWeb branding. Required pages, Cookie Banner, consent, studio credit. Use before deploying to production."
 ---
 
 # GDPR Compliance
@@ -195,6 +195,29 @@ Footer on mobile devices:
     </div>
   </div>
 </div>
+
+{/* Bottom note - MUST include ClarityWeb credit */}
+<div className="mt-16 pt-8 border-t border-rule">
+  <div className="space-y-3">
+    <p className="text-sm leading-relaxed text-muted">
+      {/* Client description */}
+    </p>
+    <p className="mt-4 text-xs text-muted">
+      {new Date().getFullYear()} ClientName
+    </p>
+    <p className="mt-2 text-xs text-muted">
+      Website by{" "}
+      <a
+        href="https://clarityweb.ie/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-[color] duration-[350ms] hover:text-ink"
+      >
+        ClarityWeb
+      </a>
+    </p>
+  </div>
+</div>
 ```
 
 ### Why grid instead of flex?
@@ -224,27 +247,37 @@ Footer on mobile devices:
 
 ## Studio Credit (Clarity Web)
 
-- [ ] Add "Made by Clarity Web" to the bottom of the footer
+> [!IMPORTANT]
+> **MANDATORY** for all ClarityWeb Studio projects.
+> This credit MUST be present in the footer of every website.
+
+- [ ] Add "Website by ClarityWeb" to the bottom of the footer
 - [ ] Link to https://clarityweb.ie
+- [ ] Link opens in new tab (`target="_blank"`)
+- [ ] Link has `rel="noopener noreferrer"` for security
 - [ ] Style: subtle, smaller font size, muted color
 
 ```jsx
-{/* Bottom Bar */}
-<div className="flex flex-col md:flex-row justify-between items-center gap-4">
-  <p className="text-xs text-soft-grey">
-    &copy; {currentYear} ClientName. All rights reserved.
-  </p>
-  <div className="flex items-center gap-6">
-    {/* Other links */}
-    <span className="text-soft-grey/50">|</span>
-    <a
-      href="https://clarityweb.ie"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-xs text-soft-grey/60 hover:text-beige transition-colors duration-300"
-    >
-      Made by Clarity Web
-    </a>
+{/* Bottom note - MUST include ClarityWeb credit */}
+<div className="mt-16 pt-8 border-t border-rule">
+  <div className="space-y-3">
+    <p className="text-sm leading-relaxed text-muted">
+      {/* Client description */}
+    </p>
+    <p className="mt-4 text-xs text-muted">
+      {new Date().getFullYear()} ClientName
+    </p>
+    <p className="mt-2 text-xs text-muted">
+      Website by{" "}
+      <a
+        href="https://clarityweb.ie/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition-[color] duration-[350ms] hover:text-ink"
+      >
+        ClarityWeb
+      </a>
+    </p>
   </div>
 </div>
 ```
@@ -270,6 +303,11 @@ Footer on mobile devices:
 ### Contact Form
 - [ ] Checkbox for consent to Privacy Policy
 - [ ] Link to Privacy Policy near checkbox
+
+### Studio Branding (MANDATORY)
+- [ ] "Website by ClarityWeb" link present in footer
+- [ ] Link opens https://clarityweb.ie in new tab
+- [ ] Link has `rel="noopener noreferrer"` for security
 
 ---
 
